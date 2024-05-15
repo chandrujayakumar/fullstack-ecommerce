@@ -1,4 +1,4 @@
-Fullstack eCommerce project for internship
+Fullstack eCommerce project
 
 technologies :
 + frontend - React, TailwindCSS
