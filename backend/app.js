@@ -15,7 +15,7 @@ app.use(express.json())
 // add the routes here below
 
 app.get("/", (req, res) => { //this is just test routes
-    res.send("This is working")
+    res.send("This is working") // test this route in postman
 })
 
 
