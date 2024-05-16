@@ -12,11 +12,12 @@ dotenv.config({
 app.use(cors({ origin: "http://localhost:5173", credentials: true }))
 app.use(express.json())
 
-// add the routes here below
 
-app.get("/", (req, res) => { //this is just test routes
-    res.send("This is working") // test this route in postman
-})
+//backend routes 
+
+// app.get("/", (req, res) => { //this is just test route
+//     res.send("This is working") // test this route in postman
+// })
 
 
 module.exports = app
