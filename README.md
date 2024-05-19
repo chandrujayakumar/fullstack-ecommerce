@@ -69,7 +69,7 @@ Internship Team Project(12 members)
 
 ## Install
 
-**Install the frontend**
+**Cloning the repository**
 
 - Cloning from main repo:
 
