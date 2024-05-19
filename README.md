@@ -66,3 +66,40 @@ Internship Team Project(12 members)
 - User Management: 👥 Admins can update user data and delete users.
 - Admin Management: 👥 Admins can add/update/delete other admins.
 - Seller Management: 👥 Admin can add/update/delete sellers.
+
+## Install
+
+**Install the frontend**
+
+- Cloning from main repo:
+
+```
+$ git clone https://github.com/GHO57/fullstack-ecommerce.git
+```
+
+- Cloning forked repo:
+
+```
+$ git clone https://github.com/<your-github-username>/fullstack-ecommerce.git
+```
+
+**Installing frontend**
+
+```
+$ cd fullstack-ecommerce/frontend
+$ npm install
+```
+
+**run frontend server**(after installation)
+
+```
+$ cd fullstack-ecommerce/frontend
+$ npm run dev
+```
+
+**run backend server**
+
+```
+$ cd fullstack-ecommerce/backend
+$ npm run dev
+```
