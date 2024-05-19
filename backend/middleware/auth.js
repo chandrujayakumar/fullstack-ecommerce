@@ -1,0 +1,42 @@
+const jwt = require("jsonwebtoken")
+const catchAsyncErrors = require("./catchAsynErrors")
+const errorHandler = require("../utils/errorHandler")
+const { pool } = require("../config/database")
+
+exports.isAuthenticated = catchAsyncErrors(async(req, res, next) => {
+    const { AUTHCOOKIE } = req.cookies
+
+    if(!AUTHCOOKIE){
+        return next(new errorHandler("You're not logged in", 401))
+    }
+
+    const decodedData = jwt.verify(AUTHCOOKIE, process.env.JWT_SECRET)
+
+    req.user = await pool.execute('SELECT * FROM users WHERE id = ?', [decodedData.id])
+    
+    next()
+})
+
+exports.isAdminAuthenticated = catchAsyncErrors(async(req, res, next) => {
+    const { ADMINAUTHCOOKIE } = req.cookies
+
+    if(!ADMINAUTHCOOKIE){
+        return next(new errorHandler("You're not an admin.", 401))
+    }
+
+    const decodedData = jwt.verify(ADMINAUTHCOOKIE, process.env.JWT_ADMIN_SECRET)
+
+    
+    req.user = await pool.execute('SELECT id, email, role FROM admins WHERE id = ?', [decodedData.id])
+    
+    next()
+})
+
+exports.authorizeRoles = (...roles) => {
+    return(req, res, next) => {
+        if(!roles.includes(req.user[0][0].role)){
+            return next(new errorHandler("Cannot access the resource", 403))
+        }
+        next()
+    }
+}

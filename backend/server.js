@@ -1,5 +1,6 @@
 const app = require("./app")
 const dotenv = require("dotenv")
+const { db_connection } = require("./config/database")
 
 
 //.env config
@@ -8,7 +9,9 @@ dotenv.config({
     path: "./config/config.env"
 })
 
+//checking database connection status
 
+db_connection()
 
 //running the server
 
