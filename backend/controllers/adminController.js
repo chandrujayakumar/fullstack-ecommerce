@@ -157,10 +157,10 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
     }else{
         const uuid = generate_uuid()
         const password = generateRandomPassword(20)
-        const message = ```You have been added as ${role}
+        const message = `You have been added as ${role}
                            path: /admin/login
                            password: ${password}
-                        ```
+                        `
         await pool.execute('INSERT INTO admins (id, fullname, role, email, password) VALUES(?, ?, ?, ?, ?)', [uuid, fullname, role, email, password])
         try{
             await sendEmail({
