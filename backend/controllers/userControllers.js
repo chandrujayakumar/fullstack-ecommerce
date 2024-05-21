@@ -68,6 +68,7 @@ exports.sendOTP = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+
 // login/signup using only email
 
 exports.loginsignup = catchAsyncErrors(async(req, res, next) => {
@@ -83,9 +84,15 @@ exports.loginsignup = catchAsyncErrors(async(req, res, next) => {
         const [existingUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
         
         if(existingUser.length > 0 && existingUser[0].fullname !== null){
-            sendToken(existingUser, 201, res)
+            
+            const [cart] = await pool.execute('SELECT id FROM carts WHERE user_id = ?', [existingUser[0].id])
+            
+            sendToken(existingUser, cart[0].id, 201, res)
+        
         }else if(existingUser.length === 0){
+            
             const uuid = generate_uuid()
+            
             await pool.execute('INSERT INTO users (id, email) VALUES(?, ?)', [uuid, email])
 
             const [user] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
@@ -120,17 +127,21 @@ exports.signupNewUser = catchAsyncErrors(async(req, res, next) => {
     const validation = validateFullname(trimmedFullname)
 
     try{
-        if(validation){
+        if(validation){            
             await pool.execute('UPDATE users SET fullname = ? WHERE email = ?', [trimmedFullname, email])
             
             const [user] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
+            
+            const cartId = generate_uuid()
+        
+            await pool.execute('INSERT INTO carts (id, user_id) VALUES (? ,?)', [cartId, user[0].id])    
     
-            sendToken(user, 201, res)
+            sendToken(user, cartId, 201, res)
         }else{
             return next(new errorHandler("Invalid Fullname", 400))
         }
     }catch(err){
-        return next(new errorHandler("Something Went Wrong. Try Again.", 400))
+        return next(new errorHandler(`Something Went Wrong. Try Again. ${err.message}`, 400))
     }
 
 })
@@ -140,6 +151,9 @@ exports.signupNewUser = catchAsyncErrors(async(req, res, next) => {
 
 exports.logout = catchAsyncErrors(async(req, res, next) => {
     res.cookie("AUTHCOOKIE", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true
+    }).cookie("CARTID", null, {
         expires: new Date(Date.now()),
         httpOnly: true
     })
@@ -153,15 +167,16 @@ exports.logout = catchAsyncErrors(async(req, res, next) => {
 //get user details (dashboard)
 
 exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
-    const { id } = req.user[0][0]
+    const { userId, cartId } = req.user[0][0]
 
     try{
-        const [user] = await pool.execute('SELECT * FROM users WHERE id = ?', [id])
+        const [user] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId])
 
         if(user.length > 0){
             res.status(200).json({
                 success: true,
-                user
+                user,
+                cartId
             })
         }else{
             res.status(404).json({
@@ -173,8 +188,6 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler(`Something Went Wrong\n${err}`, 500))
     }
 })
-
-
 
 
 //update user 

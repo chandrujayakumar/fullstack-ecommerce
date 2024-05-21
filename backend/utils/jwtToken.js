@@ -1,10 +1,14 @@
 const jwt = require("jsonwebtoken")
 
-const sendToken = (user, statusCode, res) => {
+const sendToken = (user, cartId, statusCode, res) => {
     const id = user[0].id
     const email = user[0].email
 
-    const token = jwt.sign({ id: id, email: email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: id, email: email }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+    })
+
+    const cartToken = jwt.sign({ cartId: cartId }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     })
 
@@ -17,9 +21,10 @@ const sendToken = (user, statusCode, res) => {
         secure: true
     }
 
-    res.status(statusCode).cookie("AUTHCOOKIE", token, options).json({
+    res.status(statusCode).cookie("AUTHCOOKIE", token, options).cookie("CARTID", cartToken, options).json({
         success: true,
         user,
+        cartId,
         token
     })
 }

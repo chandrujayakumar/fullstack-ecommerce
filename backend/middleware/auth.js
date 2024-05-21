@@ -12,8 +12,8 @@ exports.isAuthenticated = catchAsyncErrors(async(req, res, next) => {
 
     const decodedData = jwt.verify(AUTHCOOKIE, process.env.JWT_SECRET)
 
-    req.user = await pool.execute('SELECT * FROM users WHERE id = ?', [decodedData.id])
-    
+    req.user = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.id = ?', [decodedData.userId])
+
     next()
 })
 
@@ -21,7 +21,7 @@ exports.isAdminAuthenticated = catchAsyncErrors(async(req, res, next) => {
     const { ADMINAUTHCOOKIE } = req.cookies
 
     if(!ADMINAUTHCOOKIE){
-        return next(new errorHandler("You're not an admin.", 401))
+        return next(new errorHandler("You're not logged in as admin.", 401))
     }
 
     const decodedData = jwt.verify(ADMINAUTHCOOKIE, process.env.JWT_ADMIN_SECRET)
@@ -31,6 +31,21 @@ exports.isAdminAuthenticated = catchAsyncErrors(async(req, res, next) => {
     
     next()
 })
+
+exports.cartAuth = catchAsyncErrors(async(req, res, next) => {
+    const { AUTHCOOKIE } = req.cookies
+
+    if(!AUTHCOOKIE){
+        return next(new errorHandler("You're not logged in", 401))
+    }
+
+    const decodedData = jwt.verify(AUTHCOOKIE, process.env.JWT_SECRET)
+
+    req.user = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.id = ?', [decodedData.userId])
+
+    next()
+})
+
 
 exports.authorizeRoles = (...roles) => {
     return(req, res, next) => {

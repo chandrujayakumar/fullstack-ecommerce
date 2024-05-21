@@ -13,7 +13,7 @@ const generate_uuid = () => {
     return uuidv4();
   };
 
-//generate random password of 10 length
+//generate random password of 20 length
 
 const generateRandomPassword = (length) => {
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -133,7 +133,7 @@ exports.changeAdminRole = catchAsyncErrors(async(req, res, next) => {
             })
         }
     }catch(err){
-        return next(new errorHandler("No admin found.", 404))
+        return next(new errorHandler("No admin found with this email.", 404))
     }
 })
 
@@ -213,10 +213,12 @@ exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter the email.", 400))
     }
 
-    const [user] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
+    const [user] = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.email = ?', [email])
 
     if(user.length > 0){
-        await pool.execute('DELETE FROM users WHERE email = ?', [email])
+        await pool.execute('DELETE FROM cart_items WHERE cart_id = ?', [user[0].cartId])
+        await pool.execute('DELETE FROM carts WHERE user_id = ?', [user[0].userId])
+        await pool.execute('DELETE FROM users WHERE id = ?', [user[0].userId])
 
         res.status(200).json({
             success: true,
