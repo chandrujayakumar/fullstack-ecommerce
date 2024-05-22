@@ -28,7 +28,6 @@ process.on("uncaughtException", (err) => {
     process.exit(1)
 })
 
-
 //unhandled promise rejection
 
 process.on("unhandledRejection", (err) => {
