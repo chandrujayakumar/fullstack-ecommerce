@@ -24,7 +24,7 @@ const cart = require("./routes/cartRoutes")
 
 app.use("/api/v1/admin", admin)
 app.use("/api/v1/user", user)
-app.use("/api/v1/user", cart)
+app.use("/api/v1/user/cart", cart)
 
 
 //middleware for errors

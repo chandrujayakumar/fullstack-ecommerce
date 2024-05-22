@@ -28,7 +28,8 @@ CREATE TABLE cart_items (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-INSERT INTO products (id, name, description, price, stock) VALUES ('asdf-asdf-asdf', 'toplap', 'good speed with great build quality', 50000, 101);
+INSERT INTO products (id, name, description, price, stock) VALUES ('1', 'Laptop', 'High Ghz , 16gbs of ram with rtx 4090', 250000, 10);
+INSERT INTO products (id, name, description, price, stock) VALUES ('2', 'Mobile', '8gb ram, 512gb rom with sd 888', 150000, 4);
 
 
 select * from carts;
@@ -39,7 +40,7 @@ select * from admins;
 select * from userotps;
 
 
-delete from products where id = "asdf-asdf-asdf";
+delete from products where id = "asdf-asdf";
 delete from users where email = "jaleelashraf.official@gmail.com";
 delete from carts where user_id = "5a8989f1-f4a9-43fb-bc7f-795efb9e333c";
 

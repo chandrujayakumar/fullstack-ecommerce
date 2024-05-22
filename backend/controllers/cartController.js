@@ -21,13 +21,12 @@ exports.addToCart = catchAsyncErrors(async(req, res, next) => {
     try{
         const [productInfo] = await pool.execute('SELECT * FROM products WHERE id = ?', [product.id])
         const [cartProduct] = await pool.execute('SELECT * FROM cart_items WHERE cart_id = ? && product_id = ?', [cartId, productInfo[0].id])
-        let stock = productInfo[0].stock
+        const stock = productInfo[0].stock
         
         if(stock > 0){ //checks whether the stock is greated than 0
             if(cartProduct.length <= 0){ //checks whether the cart has this product in it
                 const uuid = generate_uuid()
-                stock = stock - 1
-                await pool.execute('UPDATE products SET stock = ? WHERE id = ?', [stock, productInfo[0].id])
+
                 await pool.execute('INSERT INTO cart_items (id, cart_id, product_id, quantity) VALUES (?, ?, ?, 1)', [uuid, cartId, productInfo[0].id])
                 
                 res.status(201).json({
@@ -36,13 +35,17 @@ exports.addToCart = catchAsyncErrors(async(req, res, next) => {
                 })
             }else{ //updates the quantity of the existing product in the cart
                 let quantity = cartProduct[0].quantity + 1
-                stock = stock - 1  
-                await pool.execute('UPDATE products SET stock = ? WHERE id = ?', [stock, productInfo[0].id])
-                await pool.execute('UPDATE cart_items SET quantity = ? WHERE cart_id = ? && product_id = ?', [quantity, cartId, productInfo[0].id])
-                res.status(200).json({
-                    success: true,
-                    message: `updated ${productInfo[0].name}'s quantity to ${quantity}`
-                })
+                
+                if(stock > quantity - 1){
+
+                    await pool.execute('UPDATE cart_items SET quantity = ? WHERE cart_id = ? && product_id = ?', [quantity, cartId, productInfo[0].id])
+                    res.status(200).json({
+                        success: true,
+                        message: `updated ${productInfo[0].name}'s quantity to ${quantity}`
+                    })
+                }else{
+                    return next(new errorHandler(`Sorry only ${stock} ${productInfo[0].name} were available.`))
+                }
             }
         }else{ //returns response as out of stock
             res.status(200).json({
@@ -53,7 +56,6 @@ exports.addToCart = catchAsyncErrors(async(req, res, next) => {
     }catch(err){
         return next(new errorHandler("Invalid product.", 400))
     }
-
 })
 
 
@@ -66,13 +68,11 @@ exports.removeFromCart = catchAsyncErrors(async(req, res, next) => {
     try{
         const [productInfo] = await pool.execute('SELECT * FROM products WHERE id = ?', [product.id])
         const [cartProduct] = await pool.execute('SELECT * FROM cart_items WHERE cart_id = ? && product_id = ?', [cartId, productInfo[0].id])
-        let stock = productInfo[0].stock
 
         if(cartProduct.length > 0 && cartProduct[0].quantity > 0){
             if(cartProduct[0].quantity > 1){
                 let quantity = cartProduct[0].quantity - 1
-                stock = stock + 1  
-                await pool.execute('UPDATE products SET stock = ? WHERE id = ?', [stock, productInfo[0].id])
+
                 await pool.execute('UPDATE cart_items SET quantity = ? WHERE cart_id = ? && product_id = ?', [quantity, cartId, productInfo[0].id])
 
                 res.status(200).json({
@@ -80,8 +80,6 @@ exports.removeFromCart = catchAsyncErrors(async(req, res, next) => {
                     message: `Updated ${productInfo[0].name}'s quantity to ${quantity}`
                 })
             }else{
-                stock = stock + 1  
-                await pool.execute('UPDATE products SET stock = ? WHERE id = ?', [stock, productInfo[0].id])
                 await pool.execute('DELETE FROM cart_items WHERE cart_id = ? && product_id = ?', [cartId, productInfo[0].id])
 
                 res.status(200).json({
@@ -116,5 +114,32 @@ exports.getCartItems = catchAsyncErrors(async(req, res, next) => {
             success: true,
             message: "No items in the cart"
         })
+    }
+})
+
+//delete the item completely from the cart
+
+exports.deleteItemFromCart = catchAsyncErrors(async(req, res, next) => {
+    const { cartId } = req.user[0][0]
+    const { product } = req.body
+
+    
+    try{
+        const [productInfo] = await pool.execute('SELECT * FROM products WHERE id = ?', [product.id])
+        const [cartProduct] = await pool.execute('SELECT * FROM cart_items WHERE cart_id = ? && product_id = ?', [cartId, productInfo[0].id])
+
+        if(cartProduct.length > 0 && cartProduct[0].quantity > 0){
+            
+            await pool.execute('DELETE FROM cart_items WHERE cart_id = ? && product_id = ?', [cartId, product.id])
+
+            res.status(200).json({
+                success: true,
+                message: `Removed ${productInfo[0].name} from the cart.`
+            })
+        }else{
+            return next(new errorHandler("Invalid Product.", 400))
+        }
+    }catch(err){
+        return next(new errorHandler("Something went wrong", 500))
     }
 })
