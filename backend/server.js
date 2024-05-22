@@ -21,6 +21,7 @@ const server = app.listen(process.env.PORT, () => {
 
 //handling uncaught exception
 
+
 process.on("uncaughtException", (err) => {
     console.log(`Error: ${err.message}\n`)
     console.log(`Shutting down the server due to uncaught Exception `)
