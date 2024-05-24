@@ -80,7 +80,7 @@ exports.loginsignup = catchAsyncErrors(async(req, res, next) => {
 
     const [db_otp] = await pool.execute('SELECT otp FROM userotps WHERE email = ?', [email])
 
-    if(otp === db_otp[0].otp){
+    if(parseInt(otp) === db_otp[0].otp){
         const [existingUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
         
         if(existingUser.length > 0 && existingUser[0].fullname !== null){
@@ -95,18 +95,18 @@ exports.loginsignup = catchAsyncErrors(async(req, res, next) => {
             
             await pool.execute('INSERT INTO users (id, email) VALUES(?, ?)', [uuid, email])
 
-            const [user] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
+            const [newUser] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
 
             res.status(201).json({
                 success: true,
                 message: "user created without fullname",
-                user
+                newUser
             })
         }else{
             res.status(200).json({
                 success: true,
                 message: "user exists without fullname",
-                existingUser
+                newUser: existingUser
             })
         }
     }else{
@@ -160,7 +160,7 @@ exports.logout = catchAsyncErrors(async(req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Logged Out"
+        message: "Logged Out Successfully"
     })
 })
 
@@ -193,5 +193,5 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
 //update user 
 
 exports.updateUser = catchAsyncErrors(async(req, res, next) => {
-
+    
 })

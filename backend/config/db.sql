@@ -32,12 +32,19 @@ INSERT INTO products (id, name, description, price, stock) VALUES ('1', 'Laptop'
 INSERT INTO products (id, name, description, price, stock) VALUES ('2', 'Mobile', '8gb ram, 512gb rom with sd 888', 150000, 4);
 
 
+
+
+
 select * from carts;
 select * from cart_items;
 select * from products;
 select * from users;
 select * from admins;
 select * from userotps;
+
+
+
+
 
 
 delete from products where id = "asdf-asdf";
