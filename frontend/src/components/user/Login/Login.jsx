@@ -17,7 +17,7 @@ const Login = ({ trigger, setTrigger }) => {
     
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { error, loading, loadingLogin, isAuthenticated, newUser, message } = useSelector((state) => state.user)
+    const { error, loading, loadingLogin, isAuthenticated, newUser, OTPSent, message } = useSelector((state) => state.user)
 
     const closeLogin = () => {
         setTrigger(false)
@@ -38,12 +38,7 @@ const Login = ({ trigger, setTrigger }) => {
     const handleEmailSubmit = async(event) => {
         event.preventDefault()
 
-        
         dispatch(sendotp(Email))
-
-        setOtpSent(true)
-        setTempEmail(Email)
-        setEmail("")
     }
 
     const handleOTPSubmit = async(event) => {
@@ -84,6 +79,11 @@ const Login = ({ trigger, setTrigger }) => {
 
     useEffect(() => {
 
+        if(OTPSent){
+            setOtpSent(true)
+            setTempEmail(Email)
+            setEmail("")
+        }
 
         if(newUser){
             setNewUserSignup(true)
@@ -93,7 +93,7 @@ const Login = ({ trigger, setTrigger }) => {
             setTrigger(false)
             navigate("/")
         }
-    }, [newUser, isAuthenticated])
+    }, [OTPSent, newUser, isAuthenticated])
 
 
   return (

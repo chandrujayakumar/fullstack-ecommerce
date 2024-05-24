@@ -6,11 +6,12 @@ import {
   Navigate
 } from 'react-router-dom'
 import { Header, Footer } from './layouts'
-import { Home } from './components'
+import { Home, Account } from './components'
 import { loaduser } from './features/user/userThunks'
 import { useDispatch, useSelector } from 'react-redux'
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Orders from './components/user/Orders/Orders'
 
 function App() {
 
@@ -50,6 +51,8 @@ function App() {
       <div className='mt-[87px] h-[200vh]'>
         <Routes>
           <Route exact path='/' element={<Home/>} />
+          <Route exact path='/account' element={isAuthenticated ? <Account /> : <Navigate to="/" />} />
+          <Route exact path='/orders' element={<Orders />} />
         </Routes>
       </div>
       <div>

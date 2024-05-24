@@ -13,6 +13,7 @@ const initialState = {
     loadingLogin: false,
     isAuthenticated: false,
     newUser: false,
+    OTPSent: false,
     message: null,
     error: null
 }
@@ -33,6 +34,7 @@ const userSlice = createSlice({
                     loadingLogin: true,
                     isAuthenticated: false,
                     newUser: false,
+                    OTPSent: false,
                     message: null,
                     error: null
                 }
@@ -46,6 +48,7 @@ const userSlice = createSlice({
                     loadingLogin: false,
                     isAuthenticated: false,
                     newUser: false, 
+                    OTPSent: true,
                     message: action.payload,
                     error: null
                 }
@@ -59,6 +62,7 @@ const userSlice = createSlice({
                     loadingLogin: false,
                     isAuthenticated: false,
                     newUser: false,
+                    OTPSent: false,
                     error: action.payload
                 }
             })
@@ -71,6 +75,7 @@ const userSlice = createSlice({
                     loadingLogin: true,
                     isAuthenticated: false,
                     newUser: false,
+                    OTPSent: false,
                     message: null,
                     error: null
                 }
@@ -85,6 +90,7 @@ const userSlice = createSlice({
                         loadingLogin: false,
                         isAuthenticated: false,
                         newUser: true,
+                        OTPSent: false,
                         user: action.payload.newUser,
                         error: null
                     }
@@ -96,6 +102,7 @@ const userSlice = createSlice({
                         isAuthenticated: true,
                         newUser: false,
                         user: action.payload.user,
+                        OTPSent: false,
                         message: `Welcome ${action.payload.user[0].fullname}`,
                         error: null
                     }
@@ -109,6 +116,7 @@ const userSlice = createSlice({
                     loading: false,
                     loadingLogin: false,
                     isAuthenticated: false,
+                    OTPSent: false,
                     error: action.payload
                 }
             })
@@ -121,6 +129,7 @@ const userSlice = createSlice({
                     loadingLogin: true,
                     isAuthenticated: false,
                     newUser: true,
+                    OTPSent: false,
                     message: null,
                     error: null
                 }
@@ -135,6 +144,7 @@ const userSlice = createSlice({
                         isAuthenticated: true,
                         newUser: false,
                         user: action.payload.user,
+                        OTPSent: false,
                         message: `Welcome ${action.payload.user[0].fullname}`,
                         error: null
                 }
@@ -148,6 +158,7 @@ const userSlice = createSlice({
                     loadingLogin: false,
                     isAuthenticated: false,
                     newUser: false,
+                    OTPSent: false,
                     user: null,
                     error: action.payload
                 }
@@ -161,8 +172,9 @@ const userSlice = createSlice({
                     loadingLogin:false, 
                     isAuthenticated: false,
                     newUser: false,
-                    message: null,
                     user: null,
+                    OTPSent: false,
+                    message: null,
                     error: null
                 }
             })
@@ -176,6 +188,7 @@ const userSlice = createSlice({
                     isAuthenticated: true,
                     newUser: false,
                     user: action.payload.user,
+                    OTPSent: false,
                     error: null
                 }
             })
@@ -189,6 +202,7 @@ const userSlice = createSlice({
                     isAuthenticated: false,
                     newUser: false,
                     user: null,
+                    OTPSent: false,
                     error: action.payload
                 }
             })
@@ -201,6 +215,7 @@ const userSlice = createSlice({
                     loadingLogin:false, 
                     isAuthenticated: true,
                     newUser: false,
+                    OTPSent: false,
                     message: null,
                     error: null
                 }
@@ -214,8 +229,9 @@ const userSlice = createSlice({
                     loadingLogin: false,
                     isAuthenticated: false,
                     newUser: false,
-                    message: action.payload.message,
                     user: null,
+                    message: action.payload.message,
+                    OTPSent: false,
                     error: null
                 }
             })
@@ -228,6 +244,7 @@ const userSlice = createSlice({
                     loadingLogin: false,
                     isAuthenticated: true,
                     newUser: false,
+                    OTPSent: false,
                     error: action.payload
                 }
             })
