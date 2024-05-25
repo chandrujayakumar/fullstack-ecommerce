@@ -5,14 +5,15 @@ import { useSelector } from 'react-redux'
 const Home = () => {
 
   const { loading } = useSelector((state) => state.user)
+  const { adminLoading } = useSelector((state) => state.admin)
 
   return (
     <>
-      {loading ? (
+      {loading || adminLoading ? (
         <Loader />
       ) : (
         <div>
-          
+          Home
         </div>
       )}
     </>

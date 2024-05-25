@@ -24,7 +24,7 @@ const userSlice = createSlice({
     reducers: {
 
     },
-    extraReducers : (builder) => {
+    extraReducers: (builder) => {
         builder
             //sendotp pending
             .addCase(sendotp.pending, (state) => {

@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { thunk } from "redux-thunk"
 import userReducer from "./features/user/userSlice"
+import adminReducer from "./features/admin/adminSlice"
 
 //combine reducers
 
 const rootReducer = combineReducers({
-    user: userReducer
+    user: userReducer,
+    admin: adminReducer
 })
 
 //configure store
