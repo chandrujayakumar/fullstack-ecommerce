@@ -179,10 +179,7 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
                 cartId
             })
         }else{
-            res.status(404).json({
-                success: false,
-                message: "User not found"
-            })
+            return next(new errorHandler("User not found", 404))
         }
     }catch(err){
         return next(new errorHandler(`Something Went Wrong\n${err}`, 500))

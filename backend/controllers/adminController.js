@@ -64,6 +64,28 @@ exports.logout = catchAsyncErrors(async(req, res, next) => {
 })
 
 
+//get admin details (dashboard)
+
+exports.getAdminDetails = catchAsyncErrors(async(req, res, next) => {
+    const { id } = req.user[0][0]
+
+    try{
+        const [adminUser] = await pool.execute('SELECT * FROM admins WHERE id = ?', [id])
+    
+        if(adminUser.length > 0){
+            res.status(200).json({
+                success: true,
+                adminUser
+            })
+        }else{
+            return next(new errorHandler("Admin not found", 404))
+        }
+    }catch(err){
+        return next(new errorHandler("Something went wrong", 500))
+    }
+})
+
+
 //get all users
 
 exports.getallusers = catchAsyncErrors(async(req, res, next) => {

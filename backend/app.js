@@ -4,6 +4,7 @@ const dotenv = require("dotenv")
 const cors = require("cors")
 const cookieParser = require("cookie-parser")
 const errorHandlingMiddleware = require("./middleware/errorHandlingMiddleware")
+const path = require("path")
 
 //.env config
 
@@ -14,7 +15,13 @@ dotenv.config({
 app.use(cors({ origin: "http://localhost:5173", credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
+// // Serve static files from the 'build' directory
+// app.use(express.static(path.join(__dirname, 'build')));
 
+// // Serve index.html for any other route
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 //backend routes 
 
