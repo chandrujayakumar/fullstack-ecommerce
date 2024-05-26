@@ -1,11 +1,12 @@
 # Full-Stack eCommerce Web Application
-Internship Team Project(12 members)
+Internship Team Project (12 members)
 
 ## 🖥️ Tech Stack
 **Frontend:**
 
 ![reactjs](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)&nbsp;
 ![tailwindcss](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)&nbsp;
+![redux](https://img.shields.io/badge/Redux-764ABC?style=for-the-badge&logo=redux&logoColor=white)&nbsp;
 
 **Backend:**
 
@@ -90,14 +91,14 @@ $ cd fullstack-ecommerce/frontend
 $ npm install
 ```
 
-**run frontend server**(after installation)
+**run frontend server in development mode**(after installation)
 
 ```
 $ cd fullstack-ecommerce/frontend
 $ npm run dev
 ```
 
-**run backend server**
+**run backend server in development mode**
 
 ```
 $ cd fullstack-ecommerce/backend
