@@ -15,7 +15,9 @@ Internship Team Project (12 members)
 ![mysql](https://img.shields.io/badge/MySQL-2596BE?style=for-the-badge&logo=mysql&logoColor=white)&nbsp;
 ![jwt](	https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)&nbsp;
 
-**CloudStorage:** ![cloudinary](https://img.shields.io/badge/cloudinary-3F5FFF?style=for-the-badge&logo=cloudinary&logoColor=white)&nbsp;
+**CloudStorage:** 
+
+![cloudinary](https://img.shields.io/badge/cloudinary-3F5FFF?style=for-the-badge&logo=cloudinary&logoColor=white)&nbsp;
 
 <!-- **Payment Gateway:** -->
 
