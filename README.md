@@ -1,4 +1,4 @@
-# Full-Stack eCommerce Web Application
+# Full-Stack eCommerce
 Internship Team Project (12 members)
 
 ## 🖥️ Tech Stack
@@ -15,11 +15,11 @@ Internship Team Project (12 members)
 ![mysql](https://img.shields.io/badge/MySQL-2596BE?style=for-the-badge&logo=mysql&logoColor=white)&nbsp;
 ![jwt](	https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)&nbsp;
 
+**CloudStorage:** ![cloudinary](https://img.shields.io/badge/cloudinary-3F5FFF?style=for-the-badge&logo=cloudinary&logoColor=white)&nbsp;
+
 <!-- **Payment Gateway:** -->
 
 <!-- ![paytm](https://img.shields.io/badge/Paytm-002970?style=for-the-badge&logo=paytm&logoColor=00BAF2) -->
-
-<!-- **Cloud Storage:** [Cloudinary](https://cloudinary.com/) -->
 
 **Mail Service:** [NodeMailer](https://nodemailer.com/)
 
