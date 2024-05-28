@@ -29,6 +29,31 @@ const sendToken = (user, cartId, statusCode, res) => {
     })
 }
 
+const sendSellerToken = (seller, statusCode, res) => {
+    const id = seller[0].id
+    const email = seller[0].email
+    const gstin = seller[0].gstin
+
+    const token = jwt.sign({ id: id, email: email, gstin: gstin }, process.env.JWT_SELLER_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+    })
+
+    const options = {
+        expires: new Date(
+            Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true,
+        SameSite: "Strict",
+        secure: true
+    }
+
+    res.status(statusCode).cookie("SELLERAUTHCOOKIE", token, options).json({
+        success: true,
+        seller,
+        token
+    })
+}
+
 const sendAdminToken = (admin, statusCode, res) => {
     const id = admin[0].id
     const email = admin[0].email
@@ -53,4 +78,4 @@ const sendAdminToken = (admin, statusCode, res) => {
     })
 }
 
-module.exports = {sendToken, sendAdminToken}
+module.exports = {sendToken, sendSellerToken, sendAdminToken}

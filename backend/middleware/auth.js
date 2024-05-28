@@ -17,6 +17,21 @@ exports.isAuthenticated = catchAsyncErrors(async(req, res, next) => {
     next()
 })
 
+exports.isSellerAuthenticated = catchAsyncErrors(async(req, res, next) => {
+    const { SELLERAUTHCOOKIE } = req.cookies
+
+    if(!SELLERAUTHCOOKIE){
+        return next(new errorHandler("You're not logged in as seller.", 401))
+    }
+
+    const decodedData = jwt.verify(SELLERAUTHCOOKIE, process.env.JWT_SELLER_SECRET)
+
+    
+    req.user = await pool.execute('SELECT id, email, gstin, role FROM sellers WHERE id = ?', [decodedData.id])
+
+    next()
+})
+
 exports.isAdminAuthenticated = catchAsyncErrors(async(req, res, next) => {
     const { ADMINAUTHCOOKIE } = req.cookies
 

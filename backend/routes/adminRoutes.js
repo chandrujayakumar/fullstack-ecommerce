@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { getallusers, changeAdminRole, deleteUser, addNewAdmin, getalladmins, adminLogin, deleteAdmin, logout, getAdminDetails } = require("../controllers/adminController")
+const { getallusers, changeAdminRole, deleteUser, addNewAdmin, getalladmins, getAllsellers, adminLogin, deleteAdmin, logout, getAdminDetails, approveSeller, rejectSeller, getSellerApplications } = require("../controllers/adminController")
 const { isAdminAuthenticated, authorizeRoles } = require("../middleware/auth")
 
 //admin login
@@ -14,6 +14,12 @@ router.route("/dashboard").get(isAdminAuthenticated, getAdminDetails)
 
 //get all users
 router.route("/getallusers").get(isAdminAuthenticated, authorizeRoles("admin"), getallusers)
+
+//get all sellers
+router.route("/getallsellers").get(isAdminAuthenticated, authorizeRoles("admin"), getAllsellers)
+
+//get all pending seller applications
+router.route("/getsellerapplications").get(isAdminAuthenticated, authorizeRoles("admin"), getSellerApplications)
 
 //get all admins
 router.route("/getalladmins").get(isAdminAuthenticated, authorizeRoles("admin"), getalladmins)
@@ -29,5 +35,11 @@ router.route("/deleteadmin").delete(isAdminAuthenticated, authorizeRoles("admin"
 
 //delete admin
 router.route("/deleteuser").delete(isAdminAuthenticated, authorizeRoles("admin"), deleteUser)
+
+//approve seller application
+router.route("/approveseller").post(isAdminAuthenticated, authorizeRoles("admin"), approveSeller)
+
+//reject seller application
+router.route("/rejectseller").post(isAdminAuthenticated, authorizeRoles("admin"), rejectSeller)
 
 module.exports = router

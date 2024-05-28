@@ -108,6 +108,50 @@ exports.getallusers = catchAsyncErrors(async(req, res, next) => {
     }
 })
 
+//get all users
+
+exports.getAllsellers = catchAsyncErrors(async(req, res, next) => {
+    try{
+        const [sellers] = await pool.execute('SELECT * FROM sellers')
+
+        if(sellers.length > 0){
+            res.status(200).json({
+                success: true,
+                sellers
+            })
+        }else{
+            res.status(404).json({
+                success: false,
+                message: "No sellers"
+            })
+        }
+    }catch(err){
+        return next(new errorHandler(`Something went wrong\n${err}`, 500))
+    }
+})
+
+//get all pending seller applications
+
+exports.getSellerApplications = catchAsyncErrors(async(req, res, next) => {    
+    try{
+        const [pendingSellers] = await pool.execute('SELECT * FROM seller_applications WHERE status = "pending"')
+
+        if(pendingSellers.length > 0){
+            res.status(200).json({
+                success: true,
+                pendingSellers
+            })
+        }else{
+            res.status(404).json({
+                success: false,
+                message: "No seller applications"
+            })
+        }
+    }catch(err){
+        return next(new errorHandler(`Something went wrong\n${err}`, 500))
+    }
+})
+
 //get all admins
 
 exports.getalladmins = catchAsyncErrors(async(req, res, next) => {
@@ -252,4 +296,102 @@ exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
             message: "User doesn't exist."
         })
     }
+})
+
+
+//approve seller application
+
+exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
+    const { email, gstin } = req.body
+
+
+    if(!email || !gstin){
+        return next(new errorHandler("Enter all the required details", 400))
+    }
+
+    try{
+        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? && email = ?', [gstin, email]) 
+
+        if(existingSeller.length > 0){
+            return next(new errorHandler("Seller Already Approved", 400))
+        }else{
+            const [appliedSeller] = await pool.execute('SELECT * FROM seller_applications WHERE gstin = ? && email= ?', [gstin, email])
+            if(appliedSeller.length > 0){
+                const uuid = generate_uuid()
+                const password = generateRandomPassword(20)
+                const message = `You're GSTIN has been approved and you can sell products 
+                                   login credentials:
+                                   email: your_email
+                                   password: ${password}
+                                `
+                await pool.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
+                await pool.execute('INSERT INTO sellers (id, full_name, email, password, company_name, company_address, gstin) VALUES (?, ?, ?, ?, ?, ?, ?)',[uuid, appliedSeller[0].full_name, appliedSeller[0].email, password, appliedSeller[0].company_name, appliedSeller[0].company_address, appliedSeller[0].gstin])
+
+                try{
+                    await sendEmail({
+                        email,
+                        subject: "SELLER APPROVED",
+                        message
+                    })
+                    res.status(200).json({
+                        success: true,
+                        message: `Seller approved and email sent successfully`
+                    })
+                }catch(err){
+                    return next(new errorHandler(err.message, 500))
+                }
+            }else{
+                return next(new errorHandler("Seller didn't applied", 400))
+            }
+            
+        }
+    }catch(error){
+        return next(new errorHandler(`Something went wrong ${error.message}`, 500))
+    }
+})
+
+
+//reject seller application
+
+exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
+    const { email, gstin } = req.body
+
+    if(!email || !gstin){
+        return next(new errorHandler("Enter all the required details", 400))
+    }
+
+    try{
+        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? && email = ?', [gstin, email]) 
+
+        if(existingSeller.length > 0){
+            return next(new errorHandler("Seller Already Approved", 400))
+        }else{
+            const [appliedSeller] = await pool.execute('SELECT * FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
+            if(appliedSeller.length > 0){
+                const message = `You're GSTIN is Invalid, please verify your GSTIN and reapply`
+
+                await pool.execute('DELETE FROM seller_applications WHERE gstin = ? && email = ?', [gstin, email])
+
+                try{
+                    await sendEmail({
+                        email,
+                        subject: "SELLER REJECTED",
+                        message
+                    })
+                    res.status(200).json({
+                        success: true,
+                        message: `Seller rejected and email sent successfully`
+                    })
+                }catch(err){
+                    return next(new errorHandler(err.message, 500))
+                }
+            }else{
+                return next(new errorHandler("Seller didn't applied", 400))
+            }
+        }
+    }catch(error){
+        return next(new errorHandler("Something went wrong", 500))
+    }
+
+
 })
