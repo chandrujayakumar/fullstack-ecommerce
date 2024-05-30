@@ -17,7 +17,7 @@ const Login = ({ trigger, setTrigger }) => {
     
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { error, loading, loadingLogin, isAuthenticated, newUser, OTPSent, message } = useSelector((state) => state.user)
+    const { error, loading, loadingLogin, isAuthenticated, isLoggingIn, newUser, OTPSent, message } = useSelector((state) => state.user)
 
     const closeLogin = () => {
         setTrigger(false)
@@ -89,7 +89,7 @@ const Login = ({ trigger, setTrigger }) => {
             setNewUserSignup(true)
         }
 
-        if(isAuthenticated){
+        if(isAuthenticated && isLoggingIn){
             setTrigger(false)
             navigate("/")
         }
@@ -106,8 +106,8 @@ const Login = ({ trigger, setTrigger }) => {
                     onClick={closeLogin}
                     icon={faClose}/>
                     <div className='flex'>
-                        <div className='flex justify-between items-center flex-col bg-primary px-[2rem] py-[4rem] rounded-[4px_0_0_4px]'>
-                            <h2 className='w-full font-bold text-[30px] text-white text-center'>eCommerce</h2>
+                        <div className='flex justify-between items-center flex-col bg-primary px-[2rem] pb-[4rem] pt-[3.5rem] rounded-[4px_0_0_4px]'>
+                            <h2 className='w-full select-none cursor-default font-extrabold text-[30px] text-white text-center'><img className='w-[200px]' src="/genie-logo-white.svg" alt="" /></h2>
                             <p className='max-w-[200px] text-[11px] text-dimWhite'>
                                 By creating or logging into account, I accept{" "}
                                 <Link className='underline hover:text-white' to="/terms-and-conditions">Terms & Conditions</Link> &{" "}

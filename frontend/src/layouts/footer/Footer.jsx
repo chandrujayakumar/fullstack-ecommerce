@@ -30,10 +30,10 @@ const Help = [
 const Footer = () => {
   return (
     <>
-      <div className='h-full w-full bg-[#f8f8f8] px-[5rem] py-[3rem]'>
+      <div className='h-full w-full bg-[#fafafa] px-[5rem] py-[3rem]'>
         <div className='flex justify-between'>
           <div className='w-full flex flex-col justify-between'>
-            <h2 className='text-[30px] font-extrabold text-primary'>eCommerce</h2>
+            <h2 className='text-[31px] font-extrabold text-primary cursor-default select-none'><img className='w-[210px]' src="/genie-logo.svg" alt="" /></h2>
             <div className='flex w-full text-[27px] gap-[2rem]'>
               <Link className='hover:text-primary transition-all duration-150'>
                 <FaFacebookSquare />
@@ -75,7 +75,7 @@ const Footer = () => {
           </div>
         </div>
         <div className='flex justify-between border-t-lightGray3 border-t-[1px] mt-[2rem] pt-[2rem]'>
-          <p className='text-mediumGray2'>© eCommerce 2024</p>
+          <p className='text-mediumGray2'>© genie 2024</p>
           <Link className='flex-center gap-[0.6rem] font-semibold hover:text-primary transition duration-300'><FaStore />Become a Seller</Link>
           <Link className='flex-center gap-[0.6rem] font-semibold hover:text-primary transition duration-300'><FaPhone />Contact Us</Link>
         </div>

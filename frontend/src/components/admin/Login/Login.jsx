@@ -36,7 +36,7 @@ const Login = () => {
     if(isAdminAuthenticated){
       setEmail("")
       setPassword("")
-      navigate("/restricted-access/admin/dashboard")
+      navigate("/admin/dashboard")
     }
   }, [isAdminAuthenticated])
   
@@ -46,19 +46,17 @@ const Login = () => {
         <Loader />
       ) : (
         <div className='fixed left-0 top-0 w-full h-full bg-white'>
-          <div className='w-full'>
-            <Link className='btn-fill max-w-[100px]' to="/">Home</Link>
-          </div>
+
           <div className='flex-center w-full h-full'>
-            <form onSubmit={handleLoginForm}>
-              <div className='p-[2rem] rounded-[4px] shadow-[0_1px_10px_2px_rgba(0,0,0,0.1)] flex-center flex-col gap-[3.2rem]'>
+            <form className='max-w-[350px] w-full' onSubmit={handleLoginForm}>
+              <div className='w-full p-[2rem] rounded-[5px] border-lightGray3 border-[1px] shadow-[0_1px_10px_2px_rgba(0,0,0,0.1)] flex-center flex-col gap-[3.2rem]'>
                   <div className='relative text-[25px] font-bold'>
                     Login
-                    <div className='absolute bottom-[-8px] w-full h-[3px] bg-primary rounded-full'></div>
+                  <div className='absolute bottom-[-8px] w-full h-[3px] bg-primary rounded-full'></div>
                   </div>
-                  <div className='flex flex-col gap-[2.5rem]'>
+                  <div className='flex flex-col gap-[2.5rem] w-full'>
                     <input 
-                      className='px-[1.2rem] py-[0.5rem] bg-[#ebebeb] rounded-[2px] border-[1px] border-transparent focus:outline-none focus:border-lightGray3 focus:bg-transparent transition-colors duration-200' 
+                      className={`w-full px-[1.2rem] py-[0.6rem] ${email.length > 0 ? "border-lightGray3 border-[1px]" : "bg-[#ebebeb]"} rounded-[2px] border-[1px] focus:outline-none focus:border-lightGray3 focus:bg-transparent transition-colors duration-200`}
                       type="email" 
                       placeholder='Email'
                       value={email}
@@ -66,7 +64,7 @@ const Login = () => {
                       required 
                     />
                     <input 
-                      className='px-[1.2rem] py-[0.5rem] bg-[#ebebeb] rounded-[2px] border-[1px] border-transparent focus:outline-none focus:border-lightGray3 focus:bg-transparent transition-colors duration-200' 
+                      className={`w-full px-[1.2rem] py-[0.6rem] ${password.length > 0 ? "border-lightGray3 border-[1px]" : "bg-[#ebebeb]"} rounded-[2px] border-[1px] focus:outline-none focus:border-lightGray3 focus:bg-transparent transition-colors duration-200`} 
                       type="password" 
                       placeholder='Password'
                       value={password}
@@ -74,9 +72,12 @@ const Login = () => {
                       required 
                     />
                   </div>
-                  <button className='btn-fill w-full rounded-[2px]'>
-                    Login
-                  </button>
+                  <div className='flex-center flex-col w-full gap-[1.5rem]'>
+                    <button className='btn-fill w-full rounded-[2px]'>
+                      Login
+                    </button>
+                    <Link className='underline text-[blue] hover:text-primary transition-all duration-150' to="/">Go to Home</Link>
+                  </div>
               </div>
             </form>
           </div>
