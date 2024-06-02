@@ -6,6 +6,7 @@ Internship Team Project (12 members)
 
 ![reactjs](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)&nbsp;
 ![tailwindcss](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)&nbsp;
+![materialui](https://img.shields.io/badge/Material%20UI-0064C8?style=for-the-badge&logo=mui&logoColor=white)&nbsp;
 ![redux](https://img.shields.io/badge/Redux-764ABC?style=for-the-badge&logo=redux&logoColor=white)&nbsp;
 
 **Backend:**
