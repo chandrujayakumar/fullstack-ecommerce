@@ -102,19 +102,19 @@ const Login = ({ trigger, setTrigger }) => {
             <div className='fixed top-0 left-0 h-full w-full bg-[rgba(0,0,0,0.7)] flex-center backdrop-blur-[6px]'>
                 <div className='relative w-auto h-auto rounded-[4px] bg-white shadow-[0_4px_30px_-5px_rgba(0,0,0,0.4)]'>
                     <FontAwesomeIcon 
-                    className='z-[100] absolute top-2 right-2 cursor-pointer' 
+                    className='z-[100] absolute top-2 right-2 cursor-pointer hover:text-mediumGray2' 
                     onClick={closeLogin}
                     icon={faClose}/>
                     <div className='flex'>
-                        <div className='flex justify-between items-center flex-col bg-primary px-[2rem] pb-[4rem] pt-[3.5rem] rounded-[4px_0_0_4px]'>
-                            <h2 className='w-full select-none cursor-default font-extrabold text-[30px] text-white text-center'><img className='w-[200px]' src="/genie-logo-white.svg" alt="" /></h2>
+                        <div className='flex justify-between items-center flex-col bg-primary px-[3rem] py-[4rem] rounded-[4px_0_0_4px]'>
+                            <h2 className='flex-center w-full select-none cursor-default font-extrabold text-[30px] text-white text-center'><img className='w-[200px]' src="/genie-logo-white.svg" alt="" /></h2>
                             <p className='max-w-[200px] text-[11px] text-dimWhite'>
                                 By creating or logging into account, I accept{" "}
                                 <Link className='underline hover:text-white' to="/terms-and-conditions">Terms & Conditions</Link> &{" "}
                                 <Link className='underline hover:text-white' to="/privacy-policy">Privacy Policy</Link>.
                             </p>
                         </div>
-                        <div className='relative px-[3.5rem] py-[4rem] flex flex-col gap-[3rem]'>
+                        <div className='relative px-[3.5rem] py-[5rem] flex flex-col gap-[3rem]'>
 
                             {loadingLogin && (
                                 <div className='z-[1000] absolute top-0 right-0 w-full h-full rounded-[0_4px_4px_0] flex-center bg-white'>
@@ -125,7 +125,7 @@ const Login = ({ trigger, setTrigger }) => {
                             {otpSent ? (
                                 newUserSignup ? (
                                     <form onSubmit={handleFullNameSubmit} encType='multipart/form-data'>
-                                        <div className='flex flex-col gap-[2rem]'>
+                                        <div className='flex flex-col gap-[3rem]'>
                                             <div className='relative'>
                                                 <input 
                                                     className='input-theme'
@@ -149,7 +149,7 @@ const Login = ({ trigger, setTrigger }) => {
                                     </form>
                                 ) : (
                                     <form onSubmit={handleOTPSubmit} encType='multipart/form-data'>
-                                        <div className='flex flex-col gap-[2rem]'>
+                                        <div className='flex flex-col gap-[3rem]'>
                                             <div className='relative'>
                                                 <input 
                                                     className='input-theme'
@@ -175,7 +175,7 @@ const Login = ({ trigger, setTrigger }) => {
                                 )
                             ):(
                                 <form onSubmit={handleEmailSubmit} encType='multipart/form-data'>
-                                    <div className='flex flex-col gap-[2.5rem]'>
+                                    <div className='flex flex-col gap-[3rem]'>
                                         <div className='relative'>
                                             <input 
                                                 className='input-theme'

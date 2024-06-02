@@ -76,7 +76,7 @@ const Footer = () => {
         </div>
         <div className='flex justify-between border-t-lightGray3 border-t-[1px] mt-[2rem] pt-[2rem]'>
           <p className='text-mediumGray2'>© genie 2024</p>
-          <Link className='flex-center gap-[0.6rem] font-semibold hover:text-primary transition duration-300'><FaStore />Become a Seller</Link>
+          <Link to="/seller" className='flex-center gap-[0.6rem] font-semibold hover:text-primary transition duration-300'><FaStore />Sell on Genie</Link>
           <Link className='flex-center gap-[0.6rem] font-semibold hover:text-primary transition duration-300'><FaPhone />Contact Us</Link>
         </div>
       </div>

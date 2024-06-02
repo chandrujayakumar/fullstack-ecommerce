@@ -5,13 +5,14 @@ import { faUser, faBox, faAddressBook, faMagnifyingGlass } from '@fortawesome/fr
 import { CiUser } from "react-icons/ci";
 import { PiShoppingCartSimpleThin, PiUserCircleThin } from "react-icons/pi";
 import { RiShieldUserLine } from "react-icons/ri";
-import { MdSpaceDashboard } from "react-icons/md";
+import { MdSpaceDashboard, MdOutlineStorefront } from "react-icons/md";
 import { FaShop } from "react-icons/fa6";
 import { TfiPackage } from "react-icons/tfi";
 import { useDispatch, useSelector } from 'react-redux';
 import { Login } from "../../components"
 import { logoutuser } from '../../features/user/userThunks';
 import { adminLogout } from '../../features/admin/adminThunks';
+import { sellerlogout } from '../../features/seller/sellerThunks';
 
 const header = () => {
 
@@ -19,9 +20,11 @@ const header = () => {
 
   const { loading, message, error, isAuthenticated, user } = useSelector((state) => state.user)
   const { adminLoading, adminMessage, adminError, isAdminAuthenticated, admin } = useSelector((state) => state.admin)
+  const { sellerLoading, sellerMessage, sellerError, isSellerAuthenticated, seller } = useSelector((state) => state.seller)
 
   const [showDropDown, setShowDropDown] = useState(false)
   const [showAdminDropDown, setShowAdminDropDown] = useState(false)
+  const [showSellerDropDown, setShowSellerDropDown] = useState(false)
   const [popLogin, setPopLogin] = useState(false)
 
   
@@ -31,6 +34,10 @@ const header = () => {
 
   const handleAdminMouseHover = (isHovering) => {
     setShowAdminDropDown(isHovering)
+  }
+
+  const handleSellerMouseHover = (isHovering) => {
+    setShowSellerDropDown(isHovering)
   }
 
   const openLogin = () => {
@@ -48,6 +55,11 @@ const header = () => {
     setShowAdminDropDown(false)
     dispatch(adminLogout())
   }
+
+  const sellerLogout = () => {
+    setShowSellerDropDown(false)
+    dispatch(sellerlogout())
+  }
   
   return (
     <>
@@ -61,7 +73,7 @@ const header = () => {
           </div>
           <div className='max-w-[450px] w-full rounded-[2px]'>
             <div className={`${popLogin ? 'z-[-1]' : 'z-0'} bg-transparent relative flex-center w-full rounded-[2px]`}>
-              <input className='w-full pl-[3rem] pr-[1rem] py-[0.4rem] text-[14px] bg-[#ebebeb] border-transparent border-[2px] rounded-[2px] focus:outline-none focus:border-lightGray3 focus:border-[2px] focus:bg-white transition-colors duration-150' type="text" placeholder='Ask products from Genie'/>
+              <input className='w-full pl-[3rem] pr-[1rem] py-[0.4rem] text-[14px] bg-[#ebebeb] border-transparent border-[2px] rounded-[2px] focus:outline-none focus:border-lightGray3 focus:border-[2px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
               <FontAwesomeIcon className='absolute left-[1rem] text-[#777]' icon={faMagnifyingGlass} />
             </div>
           </div>
@@ -97,6 +109,35 @@ const header = () => {
                     )}
                   </div>
                   )}    
+            {isSellerAuthenticated && (
+              <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleSellerMouseHover(true)} onMouseLeave={() => handleSellerMouseHover(false)}>
+                <div className='flex-center gap-[0.5rem]'>
+                  <MdOutlineStorefront className='text-[18px]' />
+                  <p>Seller</p>
+                </div>
+                <div className='absolute top-0 h-[61px] w-full'>
+                </div>
+                  {showSellerDropDown && (
+                    <div className={`bg-white absolute top-[61px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                      <div className='flex flex-col gap-[1rem] font-normal items-start'>
+                        <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
+                          <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
+                          <h2 className='truncate font-bold text-[25px] text-mediumGray3'>{seller[0].full_name.split(' ')[0]}</h2>
+                        </div>
+                        <div className='flex flex-col font-normal gap-[0.4rem] w-full border-b-[1px] border-lightGray3 pb-[1rem] mb-[0.3rem]'>
+                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard"><MdSpaceDashboard />Dashboard</Link>
+                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products"><TfiPackage />Manage Products</Link>
+                        </div>
+                        <button className='btn-fill w-full'
+                          onClick={sellerLogout}
+                          >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                    )}
+                  </div>
+                  )} 
               <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleMouseHover(true)} onMouseLeave={() => handleMouseHover(false)}>
                 <div className='flex-center gap-[0.5rem]'>
                   <CiUser className='text-[18px]' />
