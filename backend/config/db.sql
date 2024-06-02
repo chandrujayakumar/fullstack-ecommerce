@@ -8,13 +8,15 @@ CREATE TABLE products (
     id CHAR(36) PRIMARY KEY,
     seller_id CHAR(36),
     name VARCHAR(100) NOT NULL,
-    description TEXT,
+    description TEXT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    stock INT DEFAULT 0,
-    image_url VARCHAR(255),
+    mrp DECIMAL(10, 2) NOT NULL,
+    stock INT DEFAULT 0 NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
     FOREIGN KEY (seller_id) REFERENCES sellers(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE
 );
 CREATE TABLE carts (
     id CHAR(36) PRIMARY KEY,
@@ -57,20 +59,14 @@ create table sellers(
 );
 
 
-insert into seller_applications (id, full_name, email, company_name, company_address, gstin) values ("asdf", "hello", "email@amil", "asdf asf", "asdfasdf", "123456789012345");
 drop table seller_applications;
 drop table sellers;
 drop table products;
 drop table cart_items;
 
-
-INSERT INTO products (id, name, description, price, stock) VALUES ('1', 'Laptop', 'High Ghz , 16gbs of ram with rtx 4090', 250000, 10);
-INSERT INTO products (id, name, description, price, stock) VALUES ('2', 'Mobile', '8gb ram, 512gb rom with sd 888', 150000, 4);
-
-
 select * from seller_applications;
 select * from sellers;
-select * from products;	
+select * from products;
 select * from carts;
 select * from cart_items;
 select * from users;
@@ -78,15 +74,6 @@ select * from admins;
 select * from userotps;
 
 
-
-
-
-
-
-
-delete from products where id = "asdf-asdf";
-delete from users where email = "jaleelashraf.official@gmail.com";
-delete from carts where user_id = "5a8989f1-f4a9-43fb-bc7f-795efb9e333c";
 
 drop table users;
 drop table admins;

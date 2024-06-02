@@ -29,7 +29,7 @@ const sendToken = (user, cartId, statusCode, res) => {
     })
 }
 
-const sendSellerToken = (seller, statusCode, res) => {
+const sendSellerToken = (seller, sellerProducts, statusCode, res) => {
     const id = seller[0].id
     const email = seller[0].email
     const gstin = seller[0].gstin
@@ -50,6 +50,7 @@ const sendSellerToken = (seller, statusCode, res) => {
     res.status(statusCode).cookie("SELLERAUTHCOOKIE", token, options).json({
         success: true,
         seller,
+        sellerProducts,
         token
     })
 }

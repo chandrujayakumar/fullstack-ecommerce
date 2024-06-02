@@ -2,7 +2,6 @@ const { pool } = require("../config/database");
 const catchAsyncErrors = require("../middleware/catchAsynErrors");
 const { v4: uuidv4 } = require("uuid");
 const sendEmail = require("../utils/sendMail")
-const validator = require("validator")
 const errorHandler = require("../utils/errorHandler")
 const { sendToken } = require("../utils/jwtToken")
 
@@ -32,8 +31,8 @@ const validateFullname = (fullname) => {
 exports.sendOTP = catchAsyncErrors(async (req, res, next) => {
     const { email } = req.body
 
-    if(!validator.isEmail(email)){
-        return next(new errorHandler("Invalid Email", 400))
+    if(!email){
+        return next(new errorHandler("Enter an email", 400))
     }
 
     const OTP = generate_otp()
@@ -60,10 +59,10 @@ exports.sendOTP = catchAsyncErrors(async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: `OTP sent to ${email}.`
+            message: `OTP sent to ${email}`
         })
     }catch(err){
-        return next(new errorHandler(err.message, 500))
+        return next(new errorHandler('Something went wrong', 500))
     }
 });
 
@@ -76,6 +75,10 @@ exports.loginsignup = catchAsyncErrors(async(req, res, next) => {
 
     if(!otp){
         return next(new errorHandler("Enter the OTP", 400))
+    }
+
+    if(!email){
+        return next(new errorHandler("Enter the email", 400))
     }
 
     const [db_otp] = await pool.execute('SELECT otp FROM userotps WHERE email = ?', [email])
@@ -123,6 +126,10 @@ exports.signupNewUser = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler("Enter fullname", 400))
     }
 
+    if(!email){
+        return next(new errorHandler("Enter the email", 400))
+    }
+
     const trimmedFullname = fullname.trim()
     const validation = validateFullname(trimmedFullname)
 
@@ -138,10 +145,10 @@ exports.signupNewUser = catchAsyncErrors(async(req, res, next) => {
     
             sendToken(user, cartId, 201, res)
         }else{
-            return next(new errorHandler("Invalid Fullname", 400))
+            return next(new errorHandler(`Invalid Full name`, 400))
         }
     }catch(err){
-        return next(new errorHandler(`Something Went Wrong. Try Again. ${err.message}`, 400))
+        return next(new errorHandler(`Something Went Wrong`, 500))
     }
 
 })
@@ -182,7 +189,7 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
             return next(new errorHandler("User not found", 404))
         }
     }catch(err){
-        return next(new errorHandler(`Something Went Wrong\n${err}`, 500))
+        return next(new errorHandler(`Something Went Wrong`, 500))
     }
 })
 

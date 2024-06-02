@@ -2,9 +2,11 @@ const express = require("express")
 const router = express.Router()
 const { getallusers, changeAdminRole, deleteUser, addNewAdmin, getalladmins, getAllsellers, adminLogin, deleteAdmin, logout, getAdminDetails, approveSeller, rejectSeller, getSellerApplications } = require("../controllers/adminController")
 const { isAdminAuthenticated, authorizeRoles } = require("../middleware/auth")
+const { validateEmail, validateLogin, validateAll } = require("../middleware/validation")
+
 
 //admin login
-router.route("/login").post(adminLogin)
+router.route("/login").post(validateLogin, adminLogin)
 
 //admin logout
 router.route("/logout").post(isAdminAuthenticated, logout)
@@ -25,21 +27,21 @@ router.route("/getsellerapplications").get(isAdminAuthenticated, authorizeRoles(
 router.route("/getalladmins").get(isAdminAuthenticated, authorizeRoles("admin"), getalladmins)
 
 //change admin role
-router.route("/changeadminrole").post(isAdminAuthenticated, authorizeRoles("admin"), changeAdminRole)
+router.route("/changeadminrole").post(validateEmail, isAdminAuthenticated, authorizeRoles("admin"), changeAdminRole)
 
 //add new admin
 router.route("/addadmin").post(isAdminAuthenticated, authorizeRoles("admin"), addNewAdmin)
 
 //delete user
-router.route("/deleteadmin").delete(isAdminAuthenticated, authorizeRoles("admin"), deleteAdmin)
+router.route("/deleteadmin").delete(validateEmail, isAdminAuthenticated, authorizeRoles("admin"), deleteAdmin)
 
 //delete admin
-router.route("/deleteuser").delete(isAdminAuthenticated, authorizeRoles("admin"), deleteUser)
+router.route("/deleteuser").delete(validateEmail, isAdminAuthenticated, authorizeRoles("admin"), deleteUser)
 
 //approve seller application
-router.route("/approveseller").post(isAdminAuthenticated, authorizeRoles("admin"), approveSeller)
+router.route("/approveseller").post(validateAll, isAdminAuthenticated, authorizeRoles("admin"), approveSeller)
 
 //reject seller application
-router.route("/rejectseller").post(isAdminAuthenticated, authorizeRoles("admin"), rejectSeller)
+router.route("/rejectseller").post(validateAll, isAdminAuthenticated, authorizeRoles("admin"), rejectSeller)
 
 module.exports = router

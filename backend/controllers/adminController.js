@@ -33,7 +33,7 @@ exports.adminLogin = catchAsyncErrors(async(req, res, next) => {
     const { email, password } = req.body
 
     if(!email || !password){
-        return next(new errorHandler("Enter all the required fields.", 400))
+        return next(new errorHandler("Enter all the required fields", 400))
     }
 
     const [admin] = await pool.execute('SELECT * FROM admins WHERE email = ?', [email])
@@ -44,7 +44,7 @@ exports.adminLogin = catchAsyncErrors(async(req, res, next) => {
     }else{
         res.status(400).json({
             success: false,
-            message: "Invalid email or password."
+            message: "Invalid email or password"
         })
     }
 })
@@ -59,7 +59,7 @@ exports.logout = catchAsyncErrors(async(req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Admin Logged Out."
+        message: "Admin Logged Out"
     })
 })
 
@@ -98,17 +98,14 @@ exports.getallusers = catchAsyncErrors(async(req, res, next) => {
                 users
             })
         }else{
-            res.status(404).json({
-                success: false,
-                message: "No users"
-            })
+            return next(new errorHandler('No users', 404))
         }
     }catch(err){
-        return next(new errorHandler(`Something went wrong\n${err}`, 500))
+        return next(new errorHandler(`Something went wrong`, 500))
     }
 })
 
-//get all users
+//get all sellers
 
 exports.getAllsellers = catchAsyncErrors(async(req, res, next) => {
     try{
@@ -120,13 +117,10 @@ exports.getAllsellers = catchAsyncErrors(async(req, res, next) => {
                 sellers
             })
         }else{
-            res.status(404).json({
-                success: false,
-                message: "No sellers"
-            })
+            return next(new errorHandler('No sellers', 404))
         }
     }catch(err){
-        return next(new errorHandler(`Something went wrong\n${err}`, 500))
+        return next(new errorHandler(`Something went wrong`, 500))
     }
 })
 
@@ -142,13 +136,10 @@ exports.getSellerApplications = catchAsyncErrors(async(req, res, next) => {
                 pendingSellers
             })
         }else{
-            res.status(404).json({
-                success: false,
-                message: "No seller applications"
-            })
+            return next(new errorHandler('No seller applications', 404))
         }
     }catch(err){
-        return next(new errorHandler(`Something went wrong\n${err}`, 500))
+        return next(new errorHandler(`Something went wrong`, 500))
     }
 })
 
@@ -164,13 +155,10 @@ exports.getalladmins = catchAsyncErrors(async(req, res, next) => {
                 admins
             })
         }else{
-            res.status(404).json({
-                success: false,
-                message: "No users"
-            })
+            return next(new errorHandler('No admins', 404))
         }
     }catch(err){
-        return next(new errorHandler(`Something went wrong\n${err}`, 500))
+        return next(new errorHandler(`Something went wrong`, 500))
     }
 })
 
@@ -199,7 +187,7 @@ exports.changeAdminRole = catchAsyncErrors(async(req, res, next) => {
             })
         }
     }catch(err){
-        return next(new errorHandler("No admin found with this email.", 404))
+        return next(new errorHandler("No admin found with this email", 404))
     }
 })
 
@@ -210,7 +198,7 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
     const { fullname, email, role } = req.body
 
     if(!email || !fullname || !role){
-        return next(new errorHandler("Enter all the required inputs.", 400))
+        return next(new errorHandler("Enter all the required inputs", 400))
     }
 
     const [existingAdmin] = await pool.execute('SELECT * FROM admins WHERE email = ?', [email])
@@ -218,7 +206,7 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
     if(existingAdmin.length > 0){
         res.status(200).json({
             success: false,
-            message : "Admin already exists."
+            message : "Admin already exist"
         })
     }else{
         const uuid = generate_uuid()
@@ -239,7 +227,7 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
                 message: `New ${role} added and email sent successfully`
             })
         }catch(err){
-            return next(new errorHandler(err.message, 500))
+            return next(new errorHandler("Something went wrong", 500))
         }
     }
 })
@@ -263,10 +251,7 @@ exports.deleteAdmin = catchAsyncErrors(async(req, res, next) => {
             message: "Admin successfully deleted"
         })
     }else{
-        res.status(404).json({
-            success: false,
-            message: "Admin doesn't exist."
-        })
+        return next(new errorHandler("Admin doesn't exist", 404))
     }
 })
 
@@ -276,7 +261,7 @@ exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
     const { email } = req.body
 
     if(!email){
-        return next(new errorHandler("Enter the email.", 400))
+        return next(new errorHandler("Enter the email", 400))
     }
 
     const [user] = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.email = ?', [email])
@@ -291,10 +276,7 @@ exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
             message: "User successfully deleted"
         })
     }else{
-        res.status(404).json({
-            success: false,
-            message: "User doesn't exist."
-        })
+        return next(new errorHandler('User doesn\'t exist', 404))
     }
 })
 
@@ -310,7 +292,7 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
     }
 
     try{
-        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? && email = ?', [gstin, email]) 
+        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? || email = ?', [gstin, email]) 
 
         if(existingSeller.length > 0){
             return next(new errorHandler("Seller Already Approved", 400))
@@ -341,12 +323,12 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
                     return next(new errorHandler(err.message, 500))
                 }
             }else{
-                return next(new errorHandler("Seller didn't applied", 400))
+                return next(new errorHandler("Seller didn't apply", 400))
             }
             
         }
     }catch(error){
-        return next(new errorHandler(`Something went wrong ${error.message}`, 500))
+        return next(new errorHandler(`Something went wrong`, 500))
     }
 })
 
@@ -361,7 +343,7 @@ exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
     }
 
     try{
-        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? && email = ?', [gstin, email]) 
+        const [existingSeller] = await pool.execute('SELECT * FROM sellers WHERE gstin = ? || email = ?', [gstin, email]) 
 
         if(existingSeller.length > 0){
             return next(new errorHandler("Seller Already Approved", 400))
@@ -386,7 +368,7 @@ exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
                     return next(new errorHandler(err.message, 500))
                 }
             }else{
-                return next(new errorHandler("Seller didn't applied", 400))
+                return next(new errorHandler("Seller didn't apply", 400))
             }
         }
     }catch(error){

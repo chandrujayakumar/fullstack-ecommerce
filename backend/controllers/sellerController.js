@@ -66,7 +66,12 @@ exports.sellerLogin = catchAsyncErrors(async (req, res, next) => {
   );
 
   if (seller.length > 0 && pass[0].password === password) {
-    sendSellerToken(seller, 201, res);
+    const seller_id = seller[0].id
+    const [sellerProducts] = await pool.execute(
+      "SELECT * FROM products WHERE seller_id = ?",
+      [seller_id]
+    )
+    sendSellerToken(seller, sellerProducts, 201, res);
   } else {
     res.status(400).json({
       success: false,
@@ -99,11 +104,16 @@ exports.getSellerDetails = catchAsyncErrors(async (req, res, next) => {
       "SELECT * FROM sellers WHERE id = ?",
       [id]
     );
+    const [sellerProducts] = await pool.execute(
+      "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0",
+      [id]
+    )
 
     if (sellerUser.length > 0) {
       res.status(200).json({
         success: true,
         sellerUser,
+        sellerProducts
       });
     } else {
       return next(new errorHandler("Seller not found", 404));
@@ -116,10 +126,10 @@ exports.getSellerDetails = catchAsyncErrors(async (req, res, next) => {
 //add product
 
 exports.addProduct = catchAsyncErrors(async (req, res, next) => {
-  const { name, description, price, stock } = req.body;
+  const { name, description, price, mrp, stock } = req.body;
   const { id } = req.user[0][0];
 
-  if (!name || !description || !price || !stock) {
+  if (!name || !description || !price || !mrp || !stock) {
     return next(new errorHandler("Enter all the required fields", 400));
   }
 
@@ -160,9 +170,12 @@ exports.addProduct = catchAsyncErrors(async (req, res, next) => {
       const image_url = result.secure_url;
 
       await pool.execute(
-        "INSERT INTO products (id, seller_id, name, description, price, stock, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [publicId, id, name, description, price, stock, image_url]
+        "INSERT INTO products (id, seller_id, name, description, price, mrp, stock, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [publicId, id, name, description, price, mrp, stock, image_url]
       );
+
+      const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+
 
       res.status(201).json({
         success: true,
@@ -172,63 +185,80 @@ exports.addProduct = catchAsyncErrors(async (req, res, next) => {
           name,
           description,
           price,
+          mrp,
           stock,
           image_url,
         },
+        products
       });
     }
   } catch (error) {
-    return next(new errorHandler(`Something went wrong ${error.message}`, 500));
+    return next(new errorHandler(`Something went wrong`, 500));
   }
 });
 
 //delete product
 
 exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
-  const { public_id } = req.body;
+  const { public_id } = req.params;
   const { id } = req.user[0][0];
+
+  if(!public_id){
+    return next(new errorHandler('public_id not provided', 400))
+  }
 
   try {
     const [existingProduct] = await pool.execute(
-      "SELECT * FROM products WHERE id = ?",
+      "SELECT * FROM products WHERE id = ? && is_deleted = 0",
       [public_id]
     );
 
     if (existingProduct.length > 0) {
-      cloudinary.uploader.destroy(
-        `products/${id}/${public_id}`,
-        (error, result) => {
-          if (error) {
-            return next(new errorHandler("Error deleting the product", 500));
-          }
+      // cloudinary.uploader.destroy(
+      //   `products/${id}/${public_id}`,
+      //   (error, result) => {
+      //     if (error) {
+      //       return next(new errorHandler("Error deleting the product", 500));
+      //     }
 
-          pool
-            .execute("DELETE FROM products WHERE id = ?", [public_id])
-            .then(() => {
-              res.status(200).json({
-                success: true,
-                message: "product deleted successfully",
-              });
-            })
-            .catch((error) => {
-              return next(new errorHandler("Error deleting the product", 400));
-            });
-        }
-      );
+      //     pool
+      //       .execute("DELETE FROM products WHERE id = ?", [public_id])
+      //       .then(() => {
+      //         res.status(200).json({
+      //           success: true,
+      //           message: "product deleted successfully",
+      //         });
+      //       })
+      //       .catch((error) => {
+      //         return next(new errorHandler("Error deleting the product", 400));
+      //       });
+      //   }
+      // );
+
+      await pool.execute('UPDATE products SET is_deleted = 1 WHERE id = ? && seller_id = ?', [public_id, id])
+      
+      const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+
+      
+      res.status(200).json({
+        success: true,
+        message: "product deleted successfully",
+        products
+      })
     } else {
       return next(new errorHandler("product doesn't exist", 404));
     }
   } catch (error) {
-    return next(new errorHandler("Something went wrong", 500));
+    return next(new errorHandler(`Something went wrong`, 500));
   }
 });
 
 //update product details
 
 exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
-  const { id, name, description, price, stock } = req.body;
+  const { id, name, description, price, mrp, stock } = req.body;
 
-  if (!id || !name || !description || !price || !stock) {
+  if (!id || !name || !description || !price || !mrp || !stock) {
     return next(new errorHandler("No fields should be left empty", 400));
   }
 
@@ -253,8 +283,8 @@ exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
       } else {
         if (!req.file) {
           await pool.execute(
-            "UPDATE products SET name = ?, description = ?, price = ?, stock = ? WHERE id = ? && seller_id = ?",
-            [name, description, price, stock, id, seller_id]
+            "UPDATE products SET name = ?, description = ?, price = ?, mrp = ?, stock = ? WHERE id = ? && seller_id = ?",
+            [name, description, price, mrp, stock, id, seller_id]
           );
 
           res.status(200).json({
@@ -285,8 +315,8 @@ exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
           const image_url = result.secure_url;
 
           await pool.execute(
-            "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image_url = ? WHERE id = ? AND seller_id = ?",
-            [name, description, price, stock, image_url, id, seller_id]
+            "UPDATE products SET name = ?, description = ?, price = ?, mrp = ?, stock = ?, image_url = ? WHERE id = ? AND seller_id = ?",
+            [name, description, price, mrp, stock, image_url, id, seller_id]
           );
 
           res.status(201).json({
@@ -297,6 +327,7 @@ exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
               name,
               description,
               price,
+              mrp,
               stock,
               image_url,
             },
@@ -305,6 +336,57 @@ exports.updateProductDetails = catchAsyncErrors(async (req, res, next) => {
       }
     }
   } catch (error) {
-    return next(new errorHandler(`Something went wrong ${error.message}`, 500));
+    return next(new errorHandler(`Something went wrong`, 500));
   }
 });
+
+
+
+//get all products
+
+exports.getProducts = catchAsyncErrors(async(req, res, next) => {
+    const { id } = req.user[0][0]
+    
+    try{
+        const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+
+        if(products.length > 0){    
+            res.status(200).json({
+                success: true,
+                products
+            })
+        }else{
+            return next(new errorHandler('No products', 404))
+        }
+
+    }catch(error){
+        return next(new errorHandler('Something went wrong', 500))
+    }
+})
+
+
+//get product details
+
+exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
+    const { product_id } = req.body
+    const { id } = req.user[0][0]
+
+    if(!product_id){
+        return next(new errorHandler('Enter product id', 400))
+    }
+
+    try{
+        const [product] = await pool.execute('SELECT * FROM products WHERE id = ? AND seller_id = ? AND is_deleted = 0', [product_id, id])
+
+        if(product.length > 0){
+            res.status(200).json({
+                success: true,
+                product
+            })
+        }else{
+            return next(new errorHandler('No product found', 404))
+        }
+    }catch(error){
+        return next(new errorHandler('Something went wrong', 500))
+    }
+})

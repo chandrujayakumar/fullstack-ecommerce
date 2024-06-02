@@ -18,9 +18,7 @@ const server = app.listen(process.env.PORT, () => {
     console.log(`+ Server is running at http://localhost:${process.env.PORT}/`)
 })
 
-
 //handling uncaught exception
-
 
 process.on("uncaughtException", (err) => {
     console.log(`Error: ${err.message}\n`)
