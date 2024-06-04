@@ -2,6 +2,9 @@ const express = require("express")
 const app = express()
 const dotenv = require("dotenv")
 const cors = require("cors")
+const cookieParser = require("cookie-parser")
+const errorHandlingMiddleware = require("./middleware/errorHandlingMiddleware")
+// const path = require("path")
 
 //.env config
 
@@ -11,13 +14,30 @@ dotenv.config({
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }))
 app.use(express.json())
+app.use(cookieParser())
+// // Serve static files from the 'build' directory
+// app.use(express.static(path.join(__dirname, 'build')));
 
+// // Serve index.html for any other route
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 //backend routes 
 
-// app.get("/", (req, res) => { //this is just test route
-//     res.send("This is working") // test this route in postman
-// })
+const admin = require("./routes/adminRoutes")
+const user = require("./routes/userRoutes")
+const cart = require("./routes/cartRoutes")
+const seller = require("./routes/sellerRoutes")
 
+app.use("/api/v1/admin", admin)
+app.use("/api/v1/user", user)
+app.use("/api/v1/user/cart", cart)
+app.use("/api/v1/seller", seller)
+
+
+//middleware for errors
+
+app.use(errorHandlingMiddleware)
 
 module.exports = app
