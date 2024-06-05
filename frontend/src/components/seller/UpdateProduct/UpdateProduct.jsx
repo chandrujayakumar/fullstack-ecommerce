@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
-import { addProduct } from '../../../features/seller/sellerThunks';
-import { useDispatch } from 'react-redux';
+import { updateProduct } from '../../../features/seller/sellerThunks';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose } from '@fortawesome/free-solid-svg-icons'
-import { categories } from '../data'
-
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -31,10 +29,13 @@ const VisuallyHiddenInput = styled('input')({
     },
   }));
 
-const AddProduct = ({ popup, setPopup }) => {
+const UpdateProduct = ({updatePopup, setUpdatePopup }) => {
 
     const dispatch = useDispatch()
 
+    const { sellerLoading, sellerProducts, productDetails } = useSelector((state) => state.seller)
+
+    const [id, setId] = useState('')
     const [name, setName] = useState('')
     const [desc, setDesc] = useState('')
     const [category, setCategory] = useState('')
@@ -44,26 +45,27 @@ const AddProduct = ({ popup, setPopup }) => {
     const [image, setImage] = useState(null)
     const [imageName, setImageName] = useState('')
 
-    const handleAddProductForm = (event) => {
+    const handleUpdateProductForm = (event) => {
         event.preventDefault()
 
-        const addProductForm = new FormData()
+        const updateProductForm = new FormData()
 
-        addProductForm.set('name', name)
-        addProductForm.set('description', desc)
+        updateProductForm.set('id', id)
+        updateProductForm.set('name', name)
+        updateProductForm.set('description', desc)
         if(category !== ''){
-            addProductForm.set('category', category)
+            updateProductForm.set('category', category)
         }
-        addProductForm.set('price', Number(price))
-        addProductForm.set('mrp', Number(mrp))
-        addProductForm.set('stock', Number(stock))
+        updateProductForm.set('price', Number(price))
+        updateProductForm.set('mrp', Number(mrp))
+        updateProductForm.set('stock', Number(stock))
 
         if(image){
-            addProductForm.set('image', image)
+            updateProductForm.set('image', image)
         }
         
 
-        dispatch(addProduct(addProductForm))
+        dispatch(updateProduct(updateProductForm))
     }
 
     const handleNameChange = (e) => {
@@ -95,48 +97,46 @@ const AddProduct = ({ popup, setPopup }) => {
         setImageName(e.target.files[0].name)
     }
 
-    const closeAddProduct = () => {
-        setPopup(false)
+    const closeUpdateProduct = () => {
+        setUpdatePopup(false)
     }
 
     useEffect(() => {
-        if(!popup){
-            setName('')
-            setDesc('')
-            setCategory('')
-            setPrice('')
-            setMrp('')
-            setStock('')
+        if(productDetails[0]){
+            setId(productDetails[0].id)
+            setName(productDetails[0].name)
+            setDesc(productDetails[0].description)
+            setCategory(productDetails[0].category)
+            setPrice(productDetails[0].price)
+            setMrp(productDetails[0].mrp)
+            setStock(productDetails[0].stock)
             setImage(null)
             setImageName('')
         }
-    }, [popup])
+    }, [productDetails])
 
   return (
     <>
-        {popup && (
+        {updatePopup && productDetails && (
             <div className='z-[6000] fixed left-0 top-0 right-0 w-full h-full bg-[rgba(0,0,0,0.7)] flex-center backdrop-blur-[6px]'>
                 <div className='relative flex-center w-[420px] h-auto bg-white shadow-xl border-lightGray3 border-[1px] rounded-[5px] px-[3rem] py-[2rem]'>
                     <FontAwesomeIcon 
                         className='z-[100] absolute top-2 right-2 cursor-pointer hover:text-mediumGray2' 
-                        onClick={closeAddProduct}
+                        onClick={closeUpdateProduct}
                         icon={faClose}/>
-                    <form className='w-full h-full flex-center flex-col gap-[2rem]' onSubmit={handleAddProductForm}>
-                        <h3 className='text-[30px] font-extrabold text-mediumGray'>Add Product</h3>
+                    <form className='w-full h-full flex-center flex-col gap-[2rem]' onSubmit={handleUpdateProductForm}>
+                        <h3 className='text-[30px] font-extrabold text-mediumGray'>Update Product</h3>
                         <div className='flex-center flex-col gap-[1rem] w-full'>
                             <Input label="Name" variant='outlined' type="text" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={name} onChange={handleNameChange} required />
                             <Input label="Description" variant="outlined" type='text' multiline rows={3} size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={desc} onChange={handleDescChange} required />
                             <select className={`cursor-pointer w-full bg-transparent border-[1px] border-lightGray2 hover:border-mediumGray rounded-[2px] py-[1rem] px-[1rem] ${category === '' ? "text-mediumGray2" : "text-black"} bg-white`} value={category} onChange={handleCategorychange} required>
-                                <option className='text-mediumGray' value="">Category *</option>
-                                {/* <option className='text-mediumGray' value="Food & Grocery">Food & Grocery</option>
+                                <option className='text-mediumGray' value="">Category</option>
+                                <option className='text-mediumGray' value="Food & Grocery">Food & Grocery</option>
                                 <option className='text-mediumGray' value="Clothing">Clothing</option>
                                 <option className='text-mediumGray' value="Electronics">Electronics</option>
                                 <option className='text-mediumGray' value="Bags & Accessories">Bags & Accessories</option>
                                 <option className='text-mediumGray' value="Kids">Kids</option>
-                                <option className='text-mediumGray' value="Pet">Pet</option> */}
-                                {categories.map((category, key) => (
-                                    <option key={key} className='text-mediumGray' value={category}>{category}</option>
-                                ))}
+                                <option className='text-mediumGray' value="Pet">Pet</option>
                             </select>
                             <Input label="Price" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={price} onChange={handlePriceChange} required />
                             <Input label="MRP" variant='outlined' type="number" size='small' InputProps={{ sx: { fontFamily: 'Montserrat, sans-serif', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '2px' } } }} InputLabelProps={{ sx: { fontFamily: 'Montserrat, sans-serif' } }} fullWidth value={mrp} onChange={handleMrpChange} required />
@@ -153,7 +153,7 @@ const AddProduct = ({ popup, setPopup }) => {
                                 <VisuallyHiddenInput type="file" onChange={handleImageChange} />
                             </Button>
                             <Button variant='contained' type='submit' sx={{ width: "100%", height: "2.5rem", fontFamily: 'Montserrat, sans-serif' }}>    
-                                Add
+                                Update
                             </Button>
                         </div>
                     </form>
@@ -164,4 +164,4 @@ const AddProduct = ({ popup, setPopup }) => {
   )
 }
 
-export default AddProduct
+export default UpdateProduct

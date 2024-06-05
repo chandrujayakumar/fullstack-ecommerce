@@ -125,31 +125,3 @@
     font-size: 13px;
     color: var(--primary);
 }
-
-
-
-/* login loading animation */
-
-.pulse-container {
-    width: 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .pulse-bubble {
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    background-color: var(--primary);
-  }
-  
-  .pulse-bubble-1 {
-      animation: pulse .5s ease 0s infinite alternate;
-  }
-  .pulse-bubble-2 {
-      animation: pulse .5s ease .2s infinite alternate;
-  }
-  .pulse-bubble-3 {
-      animation: pulse .5s ease .4s infinite alternate;
-  }
