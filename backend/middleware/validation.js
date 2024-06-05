@@ -142,6 +142,23 @@ exports.validateSellerApplication = [
     }
 ]
 
+exports.validateSellerProducts = [
+    check('public_id_object', 'no products selected')
+        .isObject()
+        .not()
+        .isEmpty(),
+
+    (req, res, next) => {
+        const errors = validationResult(req)
+
+        if(!errors.isEmpty()){
+            return next(new errorHandler(errors.array()[0].msg, 400))
+        }
+
+        next()
+    }
+]
+
 exports.validateAll = [
         check('fullname', 'Invalid Full name')
             .optional()

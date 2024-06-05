@@ -125,8 +125,8 @@ const header = () => {
                           <h2 className='truncate font-bold text-[25px] text-mediumGray3'>{seller[0].full_name.split(' ')[0]}</h2>
                         </div>
                         <div className='flex flex-col font-normal gap-[0.4rem] w-full border-b-[1px] border-lightGray3 pb-[1rem] mb-[0.3rem]'>
-                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard"><MdSpaceDashboard />Dashboard</Link>
-                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products"><TfiPackage />Manage Products</Link>
+                          <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard"><MdSpaceDashboard />Dashboard</Link>
+                          <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products"><TfiPackage />Manage Products</Link>
                         </div>
                         <button className='btn-fill w-full'
                           onClick={sellerLogout}

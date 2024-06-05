@@ -87,6 +87,56 @@ export const deleteProduct = createAsyncThunk('seller/product/delete', async(id,
 })
 
 
+//delete multiple products thunk
+
+export const deleteMultipleProducts = createAsyncThunk('seller/products/delete', async(productIdsArray, thunkAPI) => {
+    try{
+        const { data } = await axios.delete(`/api/v1/seller/deleteproducts?productIds=${productIdsArray.join('&productIds=')}`)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+//update product thunk
+
+export const updateProduct = createAsyncThunk('seller/product/update', async(form, thunkAPI) => {
+    try{
+        const { data } = await axios.put(`/api/v1/seller/updateproduct`, form)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
+//get product details
+export const getProductDetails = createAsyncThunk('seller/productdetails', async(product_id, thunkAPI) => {
+    try{
+        const config = { headers: { "Content-Type" : "application/json" } }
+        const { data } = await axios.get(`/api/v1/seller/getproductdetails/${product_id}`, config)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
 //load seller user
 
 export const loadSeller = createAsyncThunk("seller/dashboard", async(thunkAPI) => {

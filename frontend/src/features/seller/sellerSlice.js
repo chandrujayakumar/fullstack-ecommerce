@@ -5,12 +5,16 @@ import {
     applySeller,
     addProduct,
     deleteProduct,
-    loadSeller
+    updateProduct,
+    loadSeller,
+    getProductDetails,
+    deleteMultipleProducts
 } from './sellerThunks'
 
 const initialState = {
     seller: {},
     sellerProducts: {},
+    productDetails: {},
     sellerLoading: false,
     isSellerAuthenticated: false,
     sellerMessage: null,
@@ -178,6 +182,97 @@ const sellerSlice = createSlice({
                     sellerError: action.payload
                 }
             })
+
+            //multiple products delete pending
+            .addCase(deleteMultipleProducts.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //multipe products delete fulfilled
+            .addCase(deleteMultipleProducts.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerProducts: action.payload.products,
+                    sellerMessage: action.payload.message
+                }
+            })
+
+            //multiple products delete rejected
+            .addCase(deleteMultipleProducts.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerError: action.payload
+                }
+            })
+
+            //product update pending
+            .addCase(updateProduct.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //product update fufilled
+            .addCase(updateProduct.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    productDetails: action.payload.product,
+                    sellerProducts: action.payload.products,
+                    sellerMessage: action.payload.message
+                }
+            })
+
+            //product update rejected
+            .addCase(updateProduct.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerError: action.payload
+                }
+            })
+
+            //get product details pending
+            .addCase(getProductDetails.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    productDetails: null,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //get product details fulfilled
+            .addCase(getProductDetails.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    productDetails: action.payload.product
+                }
+            })
+
+            //get product details rejected
+            .addCase(getProductDetails.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    productDetails: null,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
 
             //load seller pending
             .addCase(loadSeller.pending, (state) => {
