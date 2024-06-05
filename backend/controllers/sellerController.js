@@ -264,6 +264,7 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
 exports.deleteMultipleProducts = catchAsyncErrors(async (req, res, next) => {
   let { productIds } = req.query;
   const { id } = req.user[0][0];
+  
   let isProductExist = 0;
   
   if(typeof productIds === 'undefined'){
