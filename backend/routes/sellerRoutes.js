@@ -1,9 +1,9 @@
 const express = require("express")
 const router = express.Router()
-const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails } = require("../controllers/sellerController")
+const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts } = require("../controllers/sellerController")
 const { isSellerAuthenticated } = require("../middleware/auth")
 const uploadImage = require("../middleware/imageUpload")
-const { validateEmail, validateLogin, validateSellerApplication, validateAll } = require("../middleware/validation")
+const { validateEmail, validateLogin, validateSellerApplication, validateSellerProducts, validateAll } = require("../middleware/validation")
 
 
 //seller application
@@ -24,6 +24,12 @@ router.route("/addproduct").post(isSellerAuthenticated, uploadImage, addProduct)
 //delete product
 router.route("/deleteproduct/:public_id").delete(isSellerAuthenticated, deleteProduct)
 
+//delete multiple products -- delete
+router.route("/deleteproducts").delete(isSellerAuthenticated, deleteMultipleProducts)
+
+//delete multiple products -- post
+router.route("/deleteproducts").post(isSellerAuthenticated, deleteMultipleProducts)
+
 //update product details
 router.route("/updateproduct").put(isSellerAuthenticated, uploadImage, updateProductDetails)
 
@@ -31,6 +37,6 @@ router.route("/updateproduct").put(isSellerAuthenticated, uploadImage, updatePro
 router.route("/getproducts").get(isSellerAuthenticated, getProducts)
 
 //get product details
-router.route("/getproductdetails").get(isSellerAuthenticated, getProductDetails)
+router.route("/getproductdetails/:product_id").get(isSellerAuthenticated, getProductDetails)
 
 module.exports = router 
