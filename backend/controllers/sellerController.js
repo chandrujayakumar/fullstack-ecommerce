@@ -108,12 +108,15 @@ exports.getSellerDetails = catchAsyncErrors(async (req, res, next) => {
       "SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0",
       [id]
     )
+    const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
+
 
     if (sellerUser.length > 0) {
       res.status(200).json({
         success: true,
         sellerUser,
-        sellerProducts
+        sellerProducts,
+        deletedProducts
       });
     } else {
       return next(new errorHandler("Seller not found", 404));
@@ -243,12 +246,13 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
       await pool.execute('UPDATE products SET is_deleted = 1 WHERE id = ? && seller_id = ?', [public_id, id])
       
       const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
-
+      const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
       
       res.status(200).json({
         success: true,
         message: "product deleted successfully",
-        products
+        products,
+        deletedProducts
       })
     } else {
       return next(new errorHandler("product doesn't exist", 404));
@@ -293,15 +297,17 @@ exports.deleteMultipleProducts = catchAsyncErrors(async (req, res, next) => {
         }
         
         const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+        const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
         
         res.status(200).json({
           success: true,
           message: "products deleted successfully",
-          products
+          products,
+          deletedProducts
         })
       
       } else {
-        return next(new errorHandler("Some products not found, so nothing deleted", 404));
+        return next(new errorHandler("Some products are not found, so nothing deleted", 404));
       }
   } catch (error) {
     return next(new errorHandler(`Something went wrong`, 500));
@@ -309,6 +315,91 @@ exports.deleteMultipleProducts = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+//restore product 
+
+exports.restoreProduct = catchAsyncErrors(async(req, res, next) => {
+  const { product_id } = req.params
+  const { id } = req.user[0][0]
+
+  if(!product_id){
+    return next(new errorHandler('id not provided', 400))
+  }
+
+  try{
+    const [existingProduct] = await pool.execute('SELECT * FROM products WHERE id = ? AND seller_id = ? AND is_deleted = 1', [product_id, id])
+
+    if(existingProduct.length > 0){
+      await pool.execute('UPDATE products SET is_deleted = 0 WHERE id = ? AND seller_id = ?', [product_id, id])
+
+      const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+      const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
+      
+      res.status(200).json({
+        success: true,
+        message: "product restored successfully",
+        products,
+        deletedProducts
+      })
+    }else{
+      return next(new errorHandler('product not available', 404))
+    }
+  }catch(error){
+    return next(new errorHandler('something went wrong', 500))
+  }
+
+})
+
+
+//restore multiple products 
+
+exports.restoreMultipleProducts = catchAsyncErrors(async (req, res, next) => {
+  let { productIds } = req.query;
+  const { id } = req.user[0][0];
+  
+  let isProductExist = 0;
+  
+  if(typeof productIds === 'undefined'){
+    productIds = req.body.productIds
+  }
+  
+  if(!productIds || !productIds.length){
+    return next(new errorHandler('no products selected', 400))
+  }
+
+  try {
+    for(i=0; i < productIds.length; i++){
+      const [existingProduct] = await pool.execute(
+        "SELECT * FROM products WHERE id = ? AND is_deleted = 1",
+        [productIds[i]]
+      );
+
+      if(existingProduct.length > 0){
+        isProductExist += 1;
+      }
+    }
+      
+      if (isProductExist ===  productIds.length) {
+        for(i=0; i < productIds.length; i++){
+          await pool.execute('UPDATE products SET is_deleted = 0 WHERE id = ? && seller_id = ?', [productIds[i], id])
+        }
+        
+        const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+        const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
+        
+        res.status(200).json({
+          success: true,
+          message: "products restored successfully",
+          products,
+          deletedProducts
+        })
+      
+      } else {
+        return next(new errorHandler("Some products are not found, so nothing restored", 404));
+      }
+  } catch (error) {
+    return next(new errorHandler(`Something went wrong`, 500));
+  }
+});
 
 //update product details
 
@@ -412,11 +503,13 @@ exports.getProducts = catchAsyncErrors(async(req, res, next) => {
     
     try{
         const [products] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 0', [id])
+        const [deletedProducts] = await pool.execute('SELECT * FROM products WHERE seller_id = ? AND is_deleted = 1', [id])
 
         if(products.length > 0){    
             res.status(200).json({
                 success: true,
-                products
+                products,
+                deletedProducts
             })
         }else{
             return next(new errorHandler('No products', 404))
