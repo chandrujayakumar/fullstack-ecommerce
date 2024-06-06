@@ -12,6 +12,9 @@ const theme = createTheme({
       main: '#ff5151',
       light: '#ffeaea',
       dark: '#ff2121',
+    },
+    customBlue: {
+      main: '#6edada'
     }
   },
 });

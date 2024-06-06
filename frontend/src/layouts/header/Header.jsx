@@ -6,7 +6,7 @@ import { CiUser } from "react-icons/ci";
 import { PiShoppingCartSimpleThin, PiUserCircleThin } from "react-icons/pi";
 import { RiShieldUserLine } from "react-icons/ri";
 import { MdSpaceDashboard, MdOutlineStorefront } from "react-icons/md";
-import { FaShop } from "react-icons/fa6";
+import { FaShop, FaTrash  } from "react-icons/fa6";
 import { TfiPackage } from "react-icons/tfi";
 import { useDispatch, useSelector } from 'react-redux';
 import { Login } from "../../components"
@@ -84,10 +84,10 @@ const header = () => {
                   <RiShieldUserLine className='text-[18px]' />
                   <p>Admin</p>
                 </div>
-                <div className='absolute top-0 h-[61px] w-full'>
+                <div className='absolute top-0 h-[65.5px] w-full'>
                 </div>
                   {showAdminDropDown && (
-                    <div className={`bg-white absolute top-[61px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={`bg-white absolute top-[65.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
@@ -115,10 +115,10 @@ const header = () => {
                   <MdOutlineStorefront className='text-[18px]' />
                   <p>Seller</p>
                 </div>
-                <div className='absolute top-0 h-[61px] w-full'>
+                <div className='absolute top-0 h-[65.5px] w-full'>
                 </div>
                   {showSellerDropDown && (
-                    <div className={`bg-white absolute top-[61px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={`bg-white absolute top-[65.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
@@ -127,6 +127,7 @@ const header = () => {
                         <div className='flex flex-col font-normal gap-[0.4rem] w-full border-b-[1px] border-lightGray3 pb-[1rem] mb-[0.3rem]'>
                           <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard"><MdSpaceDashboard />Dashboard</Link>
                           <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products"><TfiPackage />Manage Products</Link>
+                          <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products/deleted"><FaTrash  />Deleted Products</Link>
                         </div>
                         <button className='btn-fill w-full'
                           onClick={sellerLogout}
@@ -143,11 +144,11 @@ const header = () => {
                   <CiUser className='text-[18px]' />
                   <p>{isAuthenticated ? "Profile" : "Login"}</p>
                 </div>
-                <div className='absolute top-0 h-[61px] w-full'>
+                <div className='absolute top-0 h-[65.5px] w-full'>
                 </div>
                 {showDropDown && (
                   isAuthenticated ? (
-                    <div className={`bg-white absolute top-[61px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={`bg-white absolute top-[65.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
@@ -166,7 +167,7 @@ const header = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className={` bg-white absolute top-[61px] right-[-90px] w-[222px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={` bg-white absolute top-[65.5px] right-[-90px] w-[222px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div>
                           <h2 className='font-bold text-[25px]'>Hello</h2>

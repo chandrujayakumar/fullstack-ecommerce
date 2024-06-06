@@ -103,6 +103,41 @@ export const deleteMultipleProducts = createAsyncThunk('seller/products/delete',
     }
 })
 
+
+//restore product thunk
+
+export const restoreProduct = createAsyncThunk('seller/product/restore', async(id, thunkAPI) => {
+    try{
+        const config = { headers: { "Content-Type" : "application/json" } }
+        const { data } = await axios.put(`/api/v1/seller/restoreproduct/${id}`, config)
+        
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
+//restore multiple products thunk
+
+export const restoreMultipleProducts = createAsyncThunk('seller/products/restore', async(productIdsArray, thunkAPI) => {
+    try{
+        const { data } = await axios.put(`/api/v1/seller/restoreproducts?productIds=${productIdsArray.join('&productIds=')}`)
+        
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
 //update product thunk
 
 export const updateProduct = createAsyncThunk('seller/product/update', async(form, thunkAPI) => {

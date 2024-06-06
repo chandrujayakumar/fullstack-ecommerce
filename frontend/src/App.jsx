@@ -9,7 +9,7 @@ import { Header, Footer } from './layouts'
 import { Home, Account } from './components'
 import Orders from './components/user/Orders/Orders'
 import { Login, Dashboard } from './components/admin'
-import { SellerLogin, Apply, MainPage, SellerDashboard, SellerProducts, AddProduct } from './components/seller'
+import { SellerLogin, Apply, MainPage, SellerDashboard, SellerProducts, AddProduct, DeletedProducts } from './components/seller'
 import { loaduser } from './features/user/userThunks'
 import { loadSeller } from './features/seller/sellerThunks'
 import { loadadminuser } from './features/admin/adminThunks'
@@ -37,13 +37,7 @@ function App() {
     }
 
     if((!loadingLogin && message) || (!loading && message) || (!adminLoading && adminMessage) || (!sellerLoading && sellerMessage)){
-      if(adminMessage){
-        toast.success(adminMessage)
-      }else if(sellerMessage){
-        toast.success(sellerMessage)
-      }else{
-        toast.success(message)
-      }
+      toast.success(adminMessage || sellerMessage || message);
     }else if((!loadingLogin && error) || (!loading && error) || (!adminLoading && adminError) || (sellerError && !sellerLoading)){
       if(adminError){
         toast.error(adminError.message)
@@ -85,6 +79,7 @@ function App() {
           <Route exact path='/seller/dashboard' element={isSellerAuthenticated ? <SellerDashboard /> : <Navigate to="/" /> }/>
           <Route exact path='/seller/dashboard/products' element={isSellerAuthenticated ? <SellerProducts /> : <Navigate to="/" />} />
           <Route exact path='/seller/dashboard/products/add' element={isSellerAuthenticated ? <AddProduct /> : <Navigate to="/" />} />
+          <Route exact path='/seller/dashboard/products/deleted' element={isSellerAuthenticated ? <DeletedProducts /> : <Navigate to="/" />} />
           <Route exact path='*' element={<NotFound />} />
         </Routes>
       </div>

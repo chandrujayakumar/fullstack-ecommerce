@@ -8,12 +8,15 @@ import {
     updateProduct,
     loadSeller,
     getProductDetails,
-    deleteMultipleProducts
+    deleteMultipleProducts,
+    restoreProduct,
+    restoreMultipleProducts
 } from './sellerThunks'
 
 const initialState = {
     seller: {},
     sellerProducts: {},
+    sellerDeletedProducts: {},
     productDetails: {},
     sellerLoading: false,
     isSellerAuthenticated: false,
@@ -170,7 +173,8 @@ const sellerSlice = createSlice({
                     ...state,
                     sellerLoading: false,
                     sellerProducts: action.payload.products,
-                    sellerMessage: action.payload.message
+                    sellerMessage: action.payload.message,
+                    sellerDeletedProducts: action.payload.deletedProducts
                 }
             })
 
@@ -199,12 +203,76 @@ const sellerSlice = createSlice({
                     ...state,
                     sellerLoading: false,
                     sellerProducts: action.payload.products,
-                    sellerMessage: action.payload.message
+                    sellerMessage: action.payload.message,
+                    sellerDeletedProducts: action.payload.deletedProducts
                 }
             })
 
             //multiple products delete rejected
             .addCase(deleteMultipleProducts.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerError: action.payload
+                }
+            })
+
+
+            //restore product pending
+            .addCase(restoreProduct.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //restore product fulfilled
+            .addCase(restoreProduct.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerProducts: action.payload.products,
+                    sellerDeletedProducts: action.payload.deletedProducts,
+                    sellerMessage: action.payload.message
+                }
+            })
+
+
+            //restore product rejected
+            .addCase(restoreProduct.rejected, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerError: action.payload
+                }
+            })
+
+
+             //multiple products restore pending
+             .addCase(restoreMultipleProducts.pending, (state) => {
+                return{
+                    ...state,
+                    sellerLoading: true,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //multipe products restore fulfilled
+            .addCase(restoreMultipleProducts.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    sellerLoading: false,
+                    sellerProducts: action.payload.products,
+                    sellerMessage: action.payload.message,
+                    sellerDeletedProducts: action.payload.deletedProducts
+                }
+            })
+
+            //multiple products restore rejected
+            .addCase(restoreMultipleProducts.rejected, (state, action) => {
                 return{
                     ...state,
                     sellerLoading: false,
@@ -280,6 +348,7 @@ const sellerSlice = createSlice({
                     ...state,
                     seller: null,
                     sellerProducts: null,
+                    sellerDeletedProducts: null,
                     sellerLoading: true,
                     isSellerAuthenticated: false,
                     sellerMessage: null,
@@ -293,6 +362,7 @@ const sellerSlice = createSlice({
                     ...state,
                     seller: action.payload.sellerUser,
                     sellerProducts: action.payload.sellerProducts,
+                    sellerDeletedProducts: action.payload.deletedProducts,
                     sellerLoading: false,
                     isSellerAuthenticated: true,
                     sellerMessage: null,
@@ -306,6 +376,7 @@ const sellerSlice = createSlice({
                     ...state,
                     seller: null,
                     sellerProducts: null,
+                    sellerDeletedProducts: null,
                     sellerLoading: false,
                     isSellerAuthenticated: false,
                     sellerMessage: null,

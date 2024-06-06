@@ -1,15 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Tooltip, Paper, Fab, Button, IconButton, Modal, Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, TextField, InputAdornment, Stack, Chip } from '@mui/material';
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import SearchIcon from '@mui/icons-material/Search';
-import { deleteMultipleProducts, deleteProduct, getProductDetails } from '../../../features/seller/sellerThunks';
+import RestoreIcon from '@mui/icons-material/Restore';
+import { restoreMultipleProducts, deleteProduct, getProductDetails, restoreProduct } from '../../../features/seller/sellerThunks';
 import { Loader } from '../../../layouts';
-import AddProduct from '../AddProduct/AddProduct';
-import UpdateProduct from '../UpdateProduct/UpdateProduct';
 import { categories } from '../data';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,19 +26,19 @@ const style = {
 
 
 
-const SellerProducts = () => {
+const DeletedProducts = () => {
 
     const dispatch = useDispatch()
 
-    const { seller, sellerProducts, sellerLoading, isSellerAuthenticated, sellerMessage, sellerError } = useSelector((state) => state.seller)
+    const { seller, sellerProducts, sellerDeletedProducts, sellerLoading, isSellerAuthenticated, sellerMessage, sellerError } = useSelector((state) => state.seller)
     
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [deleteConfirmation, setDeleteConfirmation] = useState(false)
-    const [multipleDeleteConfirmation, setMultipleDeleteConfirmation] = useState(false)
-    const [productId, setProductId] = useState('')
-    const [popup, setPopup] = useState(false)
-    const [updatePopup, setUpdatePopup] = useState(false)
+    // const [deleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [restoreConfirmation, setRestoreConfirmation] = useState(false)
+    const [multipleRestoreConfirmation, setMultipleRestoreConfirmation] = useState(false)
+    const [restoreProductId, setRestoreProductId] = useState('')
+    // const [productId, setProductId] = useState('')
 
     const [sortValue, setSortValue] = useState('')
     const [categoryName, setCategoryName] = useState([])
@@ -65,49 +62,54 @@ const SellerProducts = () => {
         textOverflow: 'ellipsis',
     };
 
-    const handleUpdateProductOpen = (product_id) => {
-        setUpdatePopup(true)
-        dispatch(getProductDetails(product_id))
+    const handleRestoreModalOpen = (product_id) => {
+        setRestoreProductId(product_id)
+        setRestoreConfirmation(true)
     }
 
-    const handleDeleteModalOpen = (product_id) => {
-        setProductId(product_id)
-        setDeleteConfirmation(true)
+    const handleRestoreModalClose = () => {
+        setRestoreConfirmation(false)
+        setRestoreProductId('')
     }
 
-    const handleDeleteModalClose = () => {
-        setProductId('')
-        setDeleteConfirmation(false)
-    }
-
-    const handleProductDelete = () => {
-        setDeleteConfirmation(false)
-        dispatch(deleteProduct(productId))
+    const handleProductRestore = () => {
+        setRestoreConfirmation(false)
+        dispatch(restoreProduct(restoreProductId))
         setPage(0)
     }
 
-    const handleMultipleDeleteModalOpen = () => {
+    // const handleDeleteModalOpen = (product_id) => {
+    //     setProductId(product_id)
+    //     setDeleteConfirmation(true)
+    // }
+
+    // const handleDeleteModalClose = () => {
+    //     setProductId('')
+    //     setDeleteConfirmation(false)
+    // }
+
+    // const handleProductDelete = () => {
+    //     setDeleteConfirmation(false)
+    //     dispatch(deleteProduct(productId))
+    // }
+
+    const handleMultipleRestoreModalOpen = () => {
         if(selectedProducts.length <= 1){
-            toast.error("Select 2 or more products to delete")
+            toast.error("Select 2 or more products to restore")
         }else{
-            setMultipleDeleteConfirmation(true)
+            setMultipleRestoreConfirmation(true)
         }
     }
 
-    const handleMultipleDeleteModalClose = () => {
-        setMultipleDeleteConfirmation(false)
+    const handleMultipleRestoreModalClose = () => {
+        setMultipleRestoreConfirmation(false)
     }
     
-    const handleMultipleProductsDelete = () => {
-        dispatch(deleteMultipleProducts(selectedProducts))
+    const handleMultipleProductsRestore = () => {
+        dispatch(restoreMultipleProducts(selectedProducts))
         setSelectedProducts([])
-        setMultipleDeleteConfirmation(false)
+        setMultipleRestoreConfirmation(false)
         setPage(0)
-    }
-
-
-    const handleAddProductOpen = () => {
-        setPopup(true)
     }
 
     const handleSortValueChange = (e) => {
@@ -144,7 +146,7 @@ const SellerProducts = () => {
 
     const handleAllProductSelect = (event) => {
         if(event.target.checked){
-            const newSelected = sellerProducts.map(product => product.id)
+            const newSelected = sellerDeletedProducts.map(product => product.id)
             setSelectedProducts(newSelected)
         }else(
             setSelectedProducts([])
@@ -181,8 +183,8 @@ const SellerProducts = () => {
     }
 
     const sortedAndFilteredProducts = useMemo(() => {
-        return sortProducts(filterProducts(sellerProducts, categoryName, searchProduct), sortValue);
-    }, [sellerProducts, categoryName, searchProduct, sortValue]) 
+        return sortProducts(filterProducts(sellerDeletedProducts, categoryName, searchProduct), sortValue);
+    }, [sellerDeletedProducts, categoryName, searchProduct, sortValue]) 
 
   return (
     <>
@@ -190,22 +192,19 @@ const SellerProducts = () => {
         <Loader/>
     ) : (
         <>
-        <AddProduct popup={popup} setPopup={setPopup} />
-        <UpdateProduct updatePopup={updatePopup} setUpdatePopup={setUpdatePopup} />
         <div className='min-h-[90vh] w-full px-[5rem] py-[3rem]'>
             <div className='flex flex-col justify-center items-start w-full h-full gap-[1rem]'>
-                {sellerProducts.length === 0 ? (
+                {sellerDeletedProducts.length === 0 ? (
                     <div className='flex-center flex-col w-full pt-[3rem] gap-[1rem]'>
                         <div className='flex-center flex-col gap-[4rem] w-full'>
                             <img className='w-[35%]' src="/no-products.svg" alt="no products" />
-                            <h2 className='font-extrabold text-[35px] text-mediumGray'>No Products Found</h2>
+                            <h2 className='font-extrabold text-[35px] text-mediumGray'>No Deleted Products Found</h2>
                         </div>
-                        <button onClick={handleAddProductOpen} className='btn-fill rounded-[3px] shadow-md flex gap-[7px]'><AddIcon />Add Product</button>
                     </div>
                 ):(
                 <>
                     <div className='w-full flex-center'>
-                        <h1 className='font-extrabold text-[30px] text-mediumGray'>All Products</h1>
+                        <h1 className='font-extrabold text-[30px] text-mediumGray'>Deleted Products</h1>
                     </div>
                     <div className='flex justify-between w-full'>
                         <div className='flex gap-[1rem]'>
@@ -243,19 +242,19 @@ const SellerProducts = () => {
                                     <MenuItem value="Z2A">Category Z-A</MenuItem>
                                 </Select>
                             </FormControl>
-                            <Button sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, borderRadius: '2px' }} onClick={handleMultipleDeleteModalOpen} variant='outlined' color='primary'>Delete Products</Button>
+                            <Button sx={{ fontFamily: 'Montserrat, sans-serif', color: '#444', fontWeight: 600, borderRadius: '2px' }} onClick={handleMultipleRestoreModalOpen} variant='contained' color='customBlue'>Restore Products</Button>
                             <Modal 
-                                open={multipleDeleteConfirmation}
-                                onClose={handleMultipleDeleteModalClose}
+                                open={multipleRestoreConfirmation}
+                                onClose={handleMultipleRestoreModalClose}
                             >
                                 <Box className="flex flex-col justify-between" sx={style}>
-                                    <p className='text-[18px]'>You're deleting {selectedProducts.length} products, Are you sure?</p>
+                                    <p className='text-[18px]'>You're Restoring {selectedProducts.length} products, Are you sure?</p>
                                     <Button
                                         variant='contained' 
-                                        color='primary' 
-                                        sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, height: '2.5rem' }}
-                                        onClick={handleMultipleProductsDelete}>
-                                        Delete
+                                        color='customBlue' 
+                                        sx={{ fontFamily: 'Montserrat, sans-serif', color: '#444', fontWeight: 600, height: '2.5rem' }}
+                                        onClick={handleMultipleProductsRestore}>
+                                        Restore
                                     </Button>                                                    
                                 </Box>
                             </Modal>
@@ -279,31 +278,26 @@ const SellerProducts = () => {
                             />
                         </div>
                     </div>
-                    {/* <div>
-                        <Stack direction="row" spacing={1}>
-                            <Chip label="Deletable" onDelete={handleDelete} />
-                        </Stack>
-                    </div> */}
                     <TableContainer sx={{ boxShadow:5 }} component={Paper}>
                         <Table sx={{ minWidth: 650 }} aria-label="products table"> 
                             <TableHead>
-                                <TableRow sx={{ bgcolor: '#ff5151' }}>
+                                <TableRow sx={{ bgcolor: 'customBlue.main' }}>
                                     <TableCell sx={{...table_body_cell_properties, minWidth: 50, maxWidth: 50, display: 'flex', justifyContent: 'center', border: 0, borderColor: 'transparent' }} align="left">
                                         <Checkbox
-                                            indeterminate={selectedProducts.length > 0 && selectedProducts.length < sellerProducts.length}
-                                            checked={sellerProducts.length > 0 && selectedProducts.length === sellerProducts.length}
+                                            indeterminate={selectedProducts.length > 0 && selectedProducts.length < sellerDeletedProducts.length}
+                                            checked={sellerDeletedProducts.length > 0 && selectedProducts.length === sellerDeletedProducts.length}
                                             onChange={handleAllProductSelect} 
                                             sx={{ color: 'white', '&.Mui-checked': { color: 'white' }, '&.MuiCheckbox-indeterminate' : { color: 'white' } }}
                                             >
                                         </Checkbox>
                                     </TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="left">Product</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="left">Description</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="right">Price</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="right">MRP</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="right">Stock</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150}} align="left">Category</TableCell>
-                                    <TableCell sx={{...table_head_cell_properties, minWidth: 100, maxWidth: 100}} align="center">Action</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150, color: '#444'}} align="left">Product</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150, color: '#444'}} align="left">Description</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150, color: '#444'}} align="right">Price</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150, color: '#444'}} align="right">MRP</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150, color: '#444'}} align="right">Stock</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 150, maxWidth: 150, color: '#444'}} align="left">Category</TableCell>
+                                    <TableCell sx={{...table_head_cell_properties, minWidth: 100, maxWidth: 100, color: '#444'}} align="center">Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -345,9 +339,26 @@ const SellerProducts = () => {
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="right">{product.stock}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 200}} align="left">{product.category}</TableCell>
                                         <TableCell align="right">
-                                            <div className='flex gap-[0.4rem] justify-end'>
-                                                <IconButton onClick={() => {handleUpdateProductOpen(product.id)}} aria-label='update' size='medium'><ModeEditIcon fontSize='inherit' /></IconButton>
-                                                <IconButton onClick={() => {handleDeleteModalOpen(product.id)}} aria-label='delete' size='medium'><DeleteIcon fontSize='inherit' /></IconButton>
+                                            <div className='flex gap-[0.4rem] justify-center'>
+                                                <Tooltip title="restore" placement="left" arrow>
+                                                    <IconButton onClick={() => {handleRestoreModalOpen(product.id)}} aria-label='update' size='medium'><RestoreIcon fontSize='inherit' /></IconButton>
+                                                </Tooltip>
+                                                <Modal 
+                                                    open={restoreConfirmation}
+                                                    onClose={handleRestoreModalClose}
+                                                >
+                                                    <Box className="flex flex-col justify-between" sx={style}>
+                                                        <p className='text-[18px]'>Are you sure about restoring?</p>
+                                                        <Button
+                                                            variant='contained' 
+                                                            color='customBlue' 
+                                                            sx={{ fontFamily: 'Montserrat, sans-serif', color: '#444', fontWeight: 600, height: '2.5rem' }}
+                                                            onClick={handleProductRestore}>
+                                                            Restore
+                                                        </Button>                                                    
+                                                    </Box>
+                                                </Modal>
+                                                {/* <IconButton onClick={() => {handleDeleteModalOpen(product.id)}} aria-label='delete' size='medium'><DeleteIcon fontSize='inherit' /></IconButton>
                                                 <Modal 
                                                     open={deleteConfirmation}
                                                     onClose={handleDeleteModalClose}
@@ -362,7 +373,7 @@ const SellerProducts = () => {
                                                             Delete
                                                         </Button>                                                    
                                                     </Box>
-                                                </Modal>
+                                                </Modal> */}
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -370,12 +381,7 @@ const SellerProducts = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <div className='flex justify-between w-full'>
-                        <Tooltip title="Add Product" placement='right' arrow>
-                            <Fab onClick={handleAddProductOpen} color='primary'>
-                                <AddIcon />
-                            </Fab>
-                        </Tooltip>
+                    <div className='flex justify-end w-full'>
                         <TablePagination 
                             component="div"
                             rowsPerPageOptions={[5, 10, 15, 20, { label: 'All', value: -1 }]}
@@ -398,4 +404,4 @@ const SellerProducts = () => {
   )
 }
 
-export default SellerProducts
+export default DeletedProducts
