@@ -9,8 +9,9 @@ CREATE TABLE products (
     seller_id CHAR(36),
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    mrp DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    price INT NOT NULL,
+    mrp INT NOT NULL,
     stock INT DEFAULT 0 NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     FOREIGN KEY (seller_id) REFERENCES sellers(id),
@@ -33,7 +34,6 @@ CREATE TABLE cart_items (
     FOREIGN KEY (cart_id) REFERENCES carts(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
-
 
 create table seller_applications(
 	id CHAR(36) NOT NULL PRIMARY KEY, 
@@ -72,8 +72,6 @@ select * from cart_items;
 select * from users;
 select * from admins;
 select * from userotps;
-
-
 
 drop table users;
 drop table admins;
