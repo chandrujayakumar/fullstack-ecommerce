@@ -8,7 +8,7 @@ import {
 import { Header, Footer } from './layouts'
 import { Home, Account } from './components'
 import Orders from './components/user/Orders/Orders'
-import { Login, Dashboard } from './components/admin'
+import { Login, Dashboard, ManageSellers, ManageAdmins, ManageUsers, ManageOrders, ManageSellerApplications } from './components/admin'
 import { SellerLogin, Apply, MainPage, SellerDashboard, SellerProducts, AddProduct, DeletedProducts } from './components/seller'
 import { loaduser } from './features/user/userThunks'
 import { loadSeller } from './features/seller/sellerThunks'
@@ -63,7 +63,7 @@ function App() {
             limit={5}
             theme='dark'
         />
-      <div className='z-[5000] fixed top-0 left-0 right-0 shadow-[0_3px_16px_-4px_rgba(0,0,0,0.2)] bg-white'>
+      <div className={`z-[5000] fixed top-0 left-0 right-0 shadow-[0_3px_16px_-4px_rgba(0,0,0,0.1)] bg-white`}>
         <Header />
       </div>
       <div className='mt-[87px]'>
@@ -72,7 +72,12 @@ function App() {
           <Route exact path='/account' element={isAuthenticated ? <Account /> : <Navigate to="/" />} />
           <Route exact path='/orders' element={<Orders />} />
           <Route exact path='/admin/login' element={isAdminAuthenticated ? <Navigate to="/admin/dashboard" /> : <Login />} />
-          <Route exact path='/admin/dashboard' element={isAdminAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
+          <Route exact path='/admin/dashboard' element={isAdminAuthenticated ? <Dashboard /> : <NotFound />} />
+          <Route exact path='/admin/dashboard/sellers' element={isAdminAuthenticated ? <ManageSellers /> : <NotFound />} />
+          <Route exact path='/admin/dashboard/seller/applications' element={isAdminAuthenticated ? <ManageSellerApplications /> : <NotFound />} />
+          <Route exact path='/admin/dashboard/admins' element={isAdminAuthenticated ? <ManageAdmins /> : <NotFound />} />
+          <Route exact path='/admin/dashboard/users' element={isAdminAuthenticated ? <ManageUsers /> : <NotFound />} />
+          <Route exact path='/admin/dashboard/orders' element={isAdminAuthenticated ? <ManageOrders /> : <NotFound />} />
           <Route exact path='/seller' element={isSellerAuthenticated ? <Navigate to="/seller/dashboard"  />: <MainPage /> } />
           <Route exact path='/seller/apply' element={isSellerAuthenticated ? <Navigate to="/seller/dashboard" /> : <Apply /> } />
           <Route exact path='/seller/login' element={isSellerAuthenticated ? <Navigate to="/seller/dashboard" /> : <SellerLogin /> }/>

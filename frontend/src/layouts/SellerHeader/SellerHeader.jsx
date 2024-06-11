@@ -5,7 +5,7 @@ const SellerHeader = () => {
 
   return (
     <>
-      <div className='flex-center w-full h-auto px-[5rem] py-[1.5rem]'>
+      <div className='flex-center w-full h-auto px-[5rem] py-[1.2rem]'>
         <div className='flex justify-between w-full'>
           <div className='flex-center'>
             <Link to="/" className='font-extrabold text-mediumGray text-[22px]'>

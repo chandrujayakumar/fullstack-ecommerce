@@ -50,9 +50,16 @@ const MainPage = () => {
         setMessage(event.target.value)
     }
 
+    useEffect(() => {
+
+        window.scrollTo(0,0)
+    
+      }, [])
+    
+
   return (
     <>
-     <div className="z-[5100] fixed top-0 left-0 right-0 shadow-[0_3px_16px_-4px_rgba(0,0,0,0.2)] bg-white">
+     <div className={`z-[5100] fixed top-0 left-0 right-0 bg-white`}>
         <SellerHeader/>
      </div>
      <div className='flex-center flex-col bg-white w-full'>
@@ -109,8 +116,8 @@ const MainPage = () => {
                         className='text-[14px] text-mediumGray1 font-normal'>Ask Genie and will get back to you</motion.p>
                 </div>
                 <motion.form
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.25, delay: 0.45 }} 
                     viewport={{ once: true, amount: 0.5 }}
                     className='flex flex-col gap-y-[2rem] w-[70%]'>
@@ -159,8 +166,8 @@ const MainPage = () => {
                 </motion.form>
             </div>
             <motion.img
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.25, delay: 0.6 }}
                 viewport={{ once: true, amount: 0.5 }}
                 className='w-[500px]' src="/help.svg" />

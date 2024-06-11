@@ -9,7 +9,7 @@ import sellerReducer from "./features/seller/sellerSlice"
 const rootReducer = combineReducers({
     user: userReducer,
     admin: adminReducer,
-    seller: sellerReducer
+    seller: sellerReducer,
 })
 
 //configure store

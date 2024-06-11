@@ -5,8 +5,9 @@ import { faUser, faBox, faAddressBook, faMagnifyingGlass } from '@fortawesome/fr
 import { CiUser } from "react-icons/ci";
 import { PiShoppingCartSimpleThin, PiUserCircleThin } from "react-icons/pi";
 import { RiShieldUserLine } from "react-icons/ri";
+import { SiGoogleforms } from "react-icons/si";
 import { MdSpaceDashboard, MdOutlineStorefront } from "react-icons/md";
-import { FaShop, FaTrash  } from "react-icons/fa6";
+import { FaShop, FaTrash, FaUserShield, FaUser } from "react-icons/fa6";
 import { TfiPackage } from "react-icons/tfi";
 import { useDispatch, useSelector } from 'react-redux';
 import { Login } from "../../components"
@@ -64,16 +65,16 @@ const header = () => {
   return (
     <>
     <Login trigger={popLogin} setTrigger={setPopLogin}/>
-      <div className='flex-center w-full h-auto px-[5rem] py-[1.5rem]'>
+      <div className='flex-center w-full h-auto px-[5rem] py-[1.2rem]'>
         <div className='flex justify-between w-full'>
           <div className='flex-center'>
             <Link to="/" className='font-extrabold text-mediumGray text-[22px]'>
               <img className='w-[90px]' src="/genie-logo.svg" alt="" />
             </Link>
           </div>
-          <div className='max-w-[450px] w-full rounded-[2px]'>
+          <div className='max-w-[400px] w-full rounded-[2px]'>
             <div className={`${popLogin ? 'z-[-1]' : 'z-0'} bg-transparent relative flex-center w-full rounded-[2px]`}>
-              <input className='w-full pl-[3rem] pr-[1rem] py-[0.4rem] text-[14px] bg-[#ebebeb] border-transparent border-[2px] rounded-[2px] focus:outline-none focus:border-lightGray3 focus:border-[2px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
+              <input className='w-full pl-[3rem] pr-[1rem] py-[0.5rem] text-[14px] bg-[#f5f6f6] border-transparent border-[1px] rounded-[2px] focus:outline-none focus:border-mediumGray focus:border-[1px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
               <FontAwesomeIcon className='absolute left-[1rem] text-[#777]' icon={faMagnifyingGlass} />
             </div>
           </div>
@@ -84,10 +85,10 @@ const header = () => {
                   <RiShieldUserLine className='text-[18px]' />
                   <p>Admin</p>
                 </div>
-                <div className='absolute top-0 h-[65.5px] w-full'>
+                <div className='absolute top-0 h-[60.5px] w-full'>
                 </div>
                   {showAdminDropDown && (
-                    <div className={`bg-white absolute top-[65.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={`bg-white absolute top-[60.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
@@ -95,8 +96,12 @@ const header = () => {
                         </div>
                         <div className='flex flex-col font-normal gap-[0.4rem] w-full border-b-[1px] border-lightGray3 pb-[1rem] mb-[0.3rem]'>
                           <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard"><MdSpaceDashboard />Dashboard</Link>
-                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/users"><PiUserCircleThin />Manage Users</Link>
+                          {admin[0].role === "admin" && (
+                            <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/admins"><FaUserShield />Manage Admins</Link>
+                            )}
+                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/users"><FaUser />Manage Users</Link>
                           <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/sellers"><FaShop />Manage Sellers</Link>
+                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/seller/applications"><SiGoogleforms />Manage Applications</Link>
                           <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/orders"><TfiPackage />Manage Orders</Link>
                         </div>
                         <button className='btn-fill w-full'
@@ -115,10 +120,10 @@ const header = () => {
                   <MdOutlineStorefront className='text-[18px]' />
                   <p>Seller</p>
                 </div>
-                <div className='absolute top-0 h-[65.5px] w-full'>
+                <div className='absolute top-0 h-[60.5px] w-full'>
                 </div>
                   {showSellerDropDown && (
-                    <div className={`bg-white absolute top-[65.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={`bg-white absolute top-[60.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
@@ -144,11 +149,11 @@ const header = () => {
                   <CiUser className='text-[18px]' />
                   <p>{isAuthenticated ? "Profile" : "Login"}</p>
                 </div>
-                <div className='absolute top-0 h-[65.5px] w-full'>
+                <div className='absolute top-0 h-[60.5px] w-full'>
                 </div>
                 {showDropDown && (
                   isAuthenticated ? (
-                    <div className={`bg-white absolute top-[65.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={`bg-white absolute top-[60.5px] right-[-100px] w-[250px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div className='border-b-[1px] border-lightGray3 w-full pb-[0.7rem]'>
                           <h2 className='font-bold text-[20px] text-darkGray2'>Hi,</h2>
@@ -167,7 +172,7 @@ const header = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className={` bg-white absolute top-[65.5px] right-[-90px] w-[222px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
+                    <div className={` bg-white absolute top-[60.5px] right-[-90px] w-[222px] shadow-[0_1px_10px_rgba(0,0,0,0.08)] border-[1px] border-[#f5f5f6] p-[1rem] rounded-[2px]`}>
                       <div className='flex flex-col gap-[1rem] font-normal items-start'>
                         <div>
                           <h2 className='font-bold text-[25px]'>Hello</h2>
