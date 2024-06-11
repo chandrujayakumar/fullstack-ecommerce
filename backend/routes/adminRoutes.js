@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { getallusers, changeAdminRole, deleteUser, addNewAdmin, getalladmins, getAllsellers, adminLogin, deleteAdmin, logout, getAdminDetails, approveSeller, rejectSeller, getSellerApplications } = require("../controllers/adminController")
+const { getallusers, changeAdminRole, deleteUser, addNewAdmin, getalladmins, getAllsellers, adminLogin, deleteAdmin, logout, getAdminDetails, approveSeller, rejectSeller, getSellerApplications, deleteSeller } = require("../controllers/adminController")
 const { isAdminAuthenticated, authorizeRoles } = require("../middleware/auth")
 const { validateEmail, validateLogin, validateAll } = require("../middleware/validation")
 
@@ -32,11 +32,15 @@ router.route("/changeadminrole").post(validateEmail, isAdminAuthenticated, autho
 //add new admin
 router.route("/addadmin").post(isAdminAuthenticated, authorizeRoles("admin"), addNewAdmin)
 
-//delete user
-router.route("/deleteadmin").delete(validateEmail, isAdminAuthenticated, authorizeRoles("admin"), deleteAdmin)
-
 //delete admin
-router.route("/deleteuser").delete(validateEmail, isAdminAuthenticated, authorizeRoles("admin"), deleteUser)
+router.route("/deleteadmin/:admin_id").delete(isAdminAuthenticated, authorizeRoles("admin"), deleteAdmin)
+
+//delete user
+router.route("/deleteuser/:user_id").delete(isAdminAuthenticated, authorizeRoles("admin"), deleteUser)
+
+//delete seller
+router.route("/deleteseller/:seller_id").delete(isAdminAuthenticated, authorizeRoles("admin"), deleteSeller)
+
 
 //approve seller application
 router.route("/approveseller").post(validateAll, isAdminAuthenticated, authorizeRoles("admin"), approveSeller)

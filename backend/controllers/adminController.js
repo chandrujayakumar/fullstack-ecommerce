@@ -175,15 +175,14 @@ exports.changeAdminRole = catchAsyncErrors(async(req, res, next) => {
 
     try{
         if(previousRole[0].role === role){
-            res.status(200).json({
-                success: false,
-                message : `already in ${role} role`
-            })
+            return next(new errorHandler(`already in '${role}' role`, 400))
         }else{
             await pool.execute('UPDATE admins SET role = ? WHERE email = ?', [role, email])
+            const [adminUsers] = await pool.execute('SELECT * FROM admins')
             res.status(200).json({
                 success: true,
-                message: `Role updated to ${role}`
+                message: `Role updated to '${role}'`,
+                adminUsers
             })
         }
     }catch(err){
@@ -204,10 +203,7 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
     const [existingAdmin] = await pool.execute('SELECT * FROM admins WHERE email = ?', [email])
 
     if(existingAdmin.length > 0){
-        res.status(200).json({
-            success: false,
-            message : "Admin already exist"
-        })
+        return next(new errorHandler("Admin already exist", 400))
     }else{
         const uuid = generate_uuid()
         const password = generateRandomPassword(20)
@@ -216,6 +212,8 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
                            password: ${password}
                         `
         await pool.execute('INSERT INTO admins (id, fullname, role, email, password) VALUES(?, ?, ?, ?, ?)', [uuid, fullname, role, email, password])
+        const [adminUser] = await pool.execute('SELECT * FROM admins WHERE id = ?', [uuid])
+
         try{
             await sendEmail({
                 email,
@@ -224,7 +222,8 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
             })
             res.status(200).json({
                 success: true,
-                message: `New ${role} added and email sent successfully`
+                message: `New ${role} added and email sent successfully`,
+                adminUser: adminUser[0]
             })
         }catch(err){
             return next(new errorHandler("Something went wrong", 500))
@@ -235,20 +234,21 @@ exports.addNewAdmin = catchAsyncErrors(async(req, res, next) => {
 //delete admin
 
 exports.deleteAdmin = catchAsyncErrors(async(req, res, next) => {
-    const { email } = req.body
+    const { admin_id } = req.params
 
-    if(!email){
-        return next(new errorHandler("Enter the email.", 400))
+    if(!admin_id){
+        return next(new errorHandler("Enter the id.", 400))
     }
 
-    const [admin] = await pool.execute('SELECT * FROM admins WHERE email = ?', [email])
+    const [admin] = await pool.execute('SELECT * FROM admins WHERE id = ?', [admin_id])
 
     if(admin.length > 0){
-        await pool.execute('DELETE FROM admins WHERE email = ?', [email])
+        await pool.execute('DELETE FROM admins WHERE id = ?', [admin_id])
 
         res.status(200).json({
             success: true,
-            message: "Admin successfully deleted"
+            message: "Admin successfully deleted",
+            adminId: admin_id
         })
     }else{
         return next(new errorHandler("Admin doesn't exist", 404))
@@ -258,13 +258,13 @@ exports.deleteAdmin = catchAsyncErrors(async(req, res, next) => {
 //delete user
 
 exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
-    const { email } = req.body
+    const { user_id } = req.params
 
-    if(!email){
-        return next(new errorHandler("Enter the email", 400))
+    if(!user_id){
+        return next(new errorHandler("Enter the id", 400))
     }
 
-    const [user] = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.email = ?', [email])
+    const [user] = await pool.execute('SELECT u.id as userId, u.fullname, u.email, c.id as cartId FROM users u, carts c WHERE c.user_id = u.id && u.id = ?', [user_id])
 
     if(user.length > 0){
         await pool.execute('DELETE FROM cart_items WHERE cart_id = ?', [user[0].cartId])
@@ -273,10 +273,36 @@ exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: "User successfully deleted"
+            message: "User successfully deleted",
+            userId: user_id
         })
     }else{
         return next(new errorHandler('User doesn\'t exist', 404))
+    }
+})
+
+//delete seller
+
+exports.deleteSeller = catchAsyncErrors(async(req, res, next) => {
+    const { seller_id } = req.params
+
+    if(!seller_id){
+        return next(new errorHandler("Enter the id", 400))
+    }
+
+    const [seller] = await pool.execute('SELECT * FROM sellers WHERE id = ?', [seller_id])
+
+    if(seller.length > 0){
+        await pool.execute('DELETE FROM products WHERE seller_id = ?', [seller_id])
+        await pool.execute('DELETE FROM sellers WHERE id = ?', [seller_id])
+
+        res.status(200).json({
+            success: true,
+            message: "Seller successfully deleted",
+            sellerId: seller_id
+        })
+    }else{
+        return next(new errorHandler('Seller doesn\'t exist', 404))
     }
 })
 
@@ -317,7 +343,8 @@ exports.approveSeller = catchAsyncErrors(async(req, res, next) => {
                     })
                     res.status(200).json({
                         success: true,
-                        message: `Seller approved and email sent successfully`
+                        message: `Seller approved and email sent successfully`,
+                        applicationId: appliedSeller[0].id
                     })
                 }catch(err){
                     return next(new errorHandler(err.message, 500))
@@ -362,7 +389,8 @@ exports.rejectSeller = catchAsyncErrors(async(req, res, next) => {
                     })
                     res.status(200).json({
                         success: true,
-                        message: `Seller rejected and email sent successfully`
+                        message: `Seller rejected and email sent successfully`,
+                        applicationId: appliedSeller[0].id
                     })
                 }catch(err){
                     return next(new errorHandler(err.message, 500))
