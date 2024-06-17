@@ -17,6 +17,7 @@ CREATE TABLE delivery_address (
     state VARCHAR(50) NOT NULL,
     landmark VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_deleted bool DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

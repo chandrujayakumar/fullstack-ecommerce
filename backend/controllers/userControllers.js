@@ -178,7 +178,7 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
 
     try{
         const [user] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId])
-        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
 
         if(user.length > 0){
             res.status(200).json({
@@ -208,7 +208,7 @@ exports.addDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
     try{
         const uuid = generate_uuid()
         await pool.execute('INSERT INTO delivery_address (id, user_id, fullname, mobile_number, alternate_phone_number, pincode, address, city, state, landmark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [uuid, userId, fullname, phone_number, alternate_phone_number, pincode, address, city, state, landmark])
-        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
 
         res.status(200).json({
             success: true,
@@ -232,8 +232,8 @@ exports.deleteDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
     }
 
     try{
-        await pool.execute('DELETE FROM delivery_address WHERE id = ? AND user_id = ?', [address_id, userId])
-        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
+        await pool.execute('UPDATE delivery_address SET is_deleted = 1 WHERE id = ? AND user_id = ?', [address_id, userId])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
 
         res.status(200).json({
             success: true,
@@ -241,7 +241,7 @@ exports.deleteDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
             deliveryAddress
         })
     }catch(error){
-        return next(new errorHandler(`Something went wrong` ,500))
+        return next(new errorHandler(`Something went wrong ${error}` ,500))
     }
 })
 
