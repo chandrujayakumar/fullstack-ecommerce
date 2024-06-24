@@ -28,21 +28,6 @@ const OrderSuccess = () => {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     };
- 
-    
-    useEffect(() => {
-        if (orderItems.length > 0) {
-          const order = allOrders.find((order) => order.id === orderItems[0].order_id);
-          if (order) {
-            setOrderId(order.id)
-            setTotal(order.total)
-            setPaymentStatus(order.payment_status);
-            setPaymentMethod(order.payment_method);
-            setOrderStatus(order.status);
-            setDeliveryAddressId(order.delivery_address_id)
-          }
-        }
-      }, [orderItems, allOrders]);
 
       useEffect(() => {
         if(deliveryAddressId !== ''){
@@ -57,6 +42,22 @@ const OrderSuccess = () => {
             dispatch(getOrderItems(order_id))
         }
       }, [dispatch, allOrders])
+
+      useEffect(() => {
+        if (orderItems.length > 0) {
+          const order = allOrders.find((order) => order.id === orderItems[0].order_id);
+          if (order) {
+            setOrderId(order.id)
+            setTotal(order.total)
+            setPaymentStatus(order.payment_status);
+            setPaymentMethod(order.payment_method);
+            setOrderStatus(order.status);
+            setDeliveryAddressId(order.delivery_address_id)
+            console.log(order.delivery_address_id)
+          }
+
+        }
+      }, [orderItems, allOrders]);
 
 
     return (
@@ -78,7 +79,7 @@ const OrderSuccess = () => {
                     <div className='flex gap-[1rem]'>
                         <div className='flex-[2] flex flex-col gap-[1rem]'>
                             <div className='bg-white shadow-md rounded-[4px] p-[1.5rem] flex flex-col gap-[0.5rem] border-[1px] border-lightGray3'>
-                                <h2 className='font-semibold text-[18px] border-b-[1px] border-b-lightGray3 pb-[0.7rem] mb-[0.3rem] text-mediumGray'>Delivery Address</h2>
+                                <h2 className='font-bold text-[20px] border-b-[1px] border-b-lightGray3 pb-[0.7rem] mb-[0.3rem] text-darkGray'>Delivery Address</h2>
                                 <div className='flex flex-col'>
                                     <h3 className='font-bold text-[17px] mb-[0.2rem]'>{selectedDeliveryAddress.fullname}</h3>
                                     <p className='text-[15px]'>{selectedDeliveryAddress.address}, {selectedDeliveryAddress.landmark}</p>
@@ -96,7 +97,8 @@ const OrderSuccess = () => {
                                             <TableCell sx={{ ...table_head_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>Product</TableCell>
                                             <TableCell sx={{ ...table_head_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>Quantity</TableCell>
                                             <TableCell sx={{ ...table_head_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>Price</TableCell>
-                                            <TableCell sx={{ ...table_head_cell_properties, minWidth: 150, maxWidth: 150 }} align='right'>MRP</TableCell>
+                                            <TableCell sx={{ ...table_head_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>MRP</TableCell>
+                                            <TableCell sx={{ ...table_head_cell_properties, minWidth: 150, maxWidth: 150 }} align='right'>Status</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -115,7 +117,8 @@ const OrderSuccess = () => {
                                             </TableCell>
                                             <TableCell sx={{ ...table_body_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>{item.quantity}</TableCell>
                                             <TableCell sx={{ ...table_body_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>₹{new Intl.NumberFormat('en-IN').format(item.price)}</TableCell>
-                                            <TableCell sx={{ ...table_body_cell_properties, minWidth: 150, maxWidth: 150 }} align='right'>₹{new Intl.NumberFormat('en-IN').format(item.mrp)}</TableCell>
+                                            <TableCell sx={{ ...table_body_cell_properties, minWidth: 150, maxWidth: 150 }} align='left'>₹{new Intl.NumberFormat('en-IN').format(item.mrp)}</TableCell>
+                                            <TableCell sx={{ ...table_body_cell_properties, minWidth: 150, maxWidth: 150, color: 'red' }} align='right'>{item.product_status}</TableCell>
                                         </TableRow>
                                     ))}
                                     </TableBody>

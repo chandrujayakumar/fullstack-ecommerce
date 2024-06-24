@@ -15,7 +15,14 @@ const initialState = {
 const productSlice = createSlice({
     name: 'products',
     initialState,
-    reducers: {},
+    reducers: {
+        clearProductMessage: (state) => {
+            state.productMessage = null;
+        },
+        clearProductError: (state) => {
+        state.productError = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             //get all products pending
@@ -76,4 +83,5 @@ const productSlice = createSlice({
     }
 })
 
+export const { clearProductMessage, clearProductError } = productSlice.actions;
 export default productSlice.reducer

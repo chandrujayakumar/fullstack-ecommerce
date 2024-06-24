@@ -18,7 +18,7 @@ module.exports = {
         lightGray3: "#dadada",
         lightGray4: "#f2f2f2",
         dimWhite: "rgba(255, 255, 255, 0.7)",
-      }
+      },
     },
   },
   plugins: [],

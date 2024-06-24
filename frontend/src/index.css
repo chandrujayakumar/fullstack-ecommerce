@@ -22,15 +22,15 @@
     --lightGray3: #dadada;
     --lightGray4: #ebebeb;
     --dimWhite: rgba(255, 255, 255, 0.7);
-    --toastify-toast-width: 370px;
-    --toastify-toast-min-height: 54px;
+    --toastify-toast-width: 600px;
+    --toastify-toast-min-height: 60px;
     --toastify-toast-bd-radius: 2px;
     --toastify-icon-color-success: white;
     --toastify-icon-color-error: white;
 }
 
 .Toastify__toast-theme--dark.Toastify__toast--success {
-    background: #07bc0c;
+    background: #057709;
     color: white;
     font-weight: 500;
     text-align: center;

@@ -172,6 +172,55 @@ export const getProductDetails = createAsyncThunk('seller/productdetails', async
 })
 
 
+
+//get all orders by seller id
+export const getAllOrdersBySellerId = createAsyncThunk("seller/get-orders", async(thunkAPI) => {
+    try{
+        const { data } = await axios.get('/api/v1/seller/orders')
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
+//get order items by order id and seller id
+export const getOrderItemsBySellerId = createAsyncThunk("seller/order/items", async(order_id, thunkAPI) => {
+    try{
+        const { data } = await axios.get(`/api/v1/seller/order/items/${order_id}`)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+//update order item status
+export const updateOrderItemStatus = createAsyncThunk("seller/order/item/update-status", async(form, thunkAPI) => {
+    try{
+        const config = { headers: { "Content-Type" : "application/json" } }
+        const { data } = await axios.post(`/api/v1/seller/order/item/updatestatus`, form, config)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+
 //load seller user
 
 export const loadSeller = createAsyncThunk("seller/dashboard", async(thunkAPI) => {

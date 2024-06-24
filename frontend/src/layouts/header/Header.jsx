@@ -15,6 +15,7 @@ import { logoutuser } from '../../features/user/userThunks';
 import { adminLogout } from '../../features/admin/adminThunks';
 import { sellerlogout } from '../../features/seller/sellerThunks';
 import { Badge } from '@mui/material';
+import { clearCartState } from '../../features/cart/cartSlice';
 
 const header = () => {
 
@@ -51,7 +52,9 @@ const header = () => {
 
   const logout = () => {
     setShowDropDown(false)
-    dispatch(logoutuser())
+    dispatch(logoutuser()).then(() => {
+      dispatch(clearCartState());
+    })
   }
 
   const adminlogout = () => {
@@ -104,7 +107,6 @@ const header = () => {
                           <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/users"><FaUser />Manage Users</Link>
                           <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/sellers"><FaShop />Manage Sellers</Link>
                           <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/seller/applications"><SiGoogleforms />Manage Applications</Link>
-                          <Link onClick={() => {setShowAdminDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/admin/dashboard/orders"><TfiPackage />Manage Orders</Link>
                         </div>
                         <button className='btn-fill w-full'
                           onClick={adminlogout}
@@ -134,6 +136,7 @@ const header = () => {
                         <div className='flex flex-col font-normal gap-[0.4rem] w-full border-b-[1px] border-lightGray3 pb-[1rem] mb-[0.3rem]'>
                           <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard"><MdSpaceDashboard />Dashboard</Link>
                           <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products"><TfiPackage />Manage Products</Link>
+                          <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/orders"><SiGoogleforms />Manage Orders</Link>
                           <Link onClick={() => {setShowSellerDropDown(false)}} className='text-mediumGray2 hover:text-primary hover:font-semibold flex items-center gap-[0.5rem]' to="/seller/dashboard/products/deleted"><FaTrash  />Deleted Products</Link>
                         </div>
                         <button className='btn-fill w-full'

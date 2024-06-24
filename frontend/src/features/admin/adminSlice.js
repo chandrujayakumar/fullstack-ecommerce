@@ -32,7 +32,12 @@ const adminSlice = createSlice({
     name: 'admin',
     initialState,
     reducers: {
-
+        clearAdminMessage: (state) => {
+            state.adminMessage = null;
+        },
+        clearAdminError: (state) => {
+        state.adminError = null;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -472,4 +477,5 @@ const adminSlice = createSlice({
     }
 })
 
+export const { clearAdminMessage, clearAdminError } = adminSlice.actions;
 export default adminSlice.reducer

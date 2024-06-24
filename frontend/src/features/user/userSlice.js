@@ -10,10 +10,12 @@ import {
     getAllOrders,
     getOrderItems
 } from './userThunks'
+import { clearCartState } from "../cart/cartSlice";
 
 const initialState = {
     user: {},
     deliveryAddress: [],
+    allDeliveryAddress: [],
     allOrders: [],
     orderItems: [],
     loading: false,
@@ -30,7 +32,13 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-
+        clearUserMessage: (state) => {
+            state.message = null;
+        },
+        
+        clearUserError: (state) => {
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -193,6 +201,7 @@ const userSlice = createSlice({
                     ...state, 
                     loading: false,
                     deliveryAddress: action.payload.deliveryAddress || [],
+                    allDeliveryAddress : action.payload.allDeliveryAddress || [],
                     message: action.payload.message
                 }
             })
@@ -203,6 +212,7 @@ const userSlice = createSlice({
                     ...state, 
                     loading: false,
                     deliveryAddress: [],
+                    allDeliveryAddress: [],
                     error: action.payload
                 }
             })
@@ -223,6 +233,7 @@ const userSlice = createSlice({
                     ...state, 
                     loading: false,
                     deliveryAddress: action.payload.deliveryAddress || [],
+                    allDeliveryAddress: action.payload.allDeliveryAddress || [],
                     message: action.payload.message
                 }
             })
@@ -255,6 +266,8 @@ const userSlice = createSlice({
                     ...state, 
                     loading: false,
                     allOrders: action.payload.orders || [],
+                    deliveryAddress: action.payload.deliveryAddress || [],
+                    allDeliveryAddress: action.payload.allDeliveryAddress || [],
                     message: action.payload.message
                 }
             })
@@ -327,6 +340,7 @@ const userSlice = createSlice({
                     newUser: false,
                     user: action.payload.user,
                     deliveryAddress: action.payload.deliveryAddress || [],
+                    allDeliveryAddress: action.payload.allDeliveryAddress || [],
                     OTPSent: false,
                     error: null
                 }
@@ -342,6 +356,7 @@ const userSlice = createSlice({
                     newUser: false,
                     user: null,
                     deliveryAddress: [],
+                    allDeliveryAddress: [],
                     OTPSent: false,
                     error: action.payload
                 }
@@ -370,9 +385,13 @@ const userSlice = createSlice({
                     isAuthenticated: false,
                     newUser: false,
                     user: null,
+                    deliveryAddress: [],
+                    allDeliveryAddress: [],
+                    allOrders: [],
+                    orderItems: [],
                     message: action.payload.message,
                     OTPSent: false,
-                    error: null
+                    error: null,
                 }
             })
             
@@ -391,4 +410,6 @@ const userSlice = createSlice({
     } 
 })
 
+
+export const { clearUserMessage, clearUserError } = userSlice.actions;
 export default userSlice.reducer

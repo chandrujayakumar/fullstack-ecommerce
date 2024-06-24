@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Loader } from "../../../layouts";
+import ButtonLoader from "../../../layouts/ButtonLoader/ButtonLoader";
 import { useDispatch, useSelector } from "react-redux";
 import Carousel from "../../../layouts/Carousel/Carousel";
 import CategoriesCarousel from "../../../layouts/CategoriesCarousel/CategoriesCarousel";
@@ -19,6 +20,7 @@ const Home = () => {
   const { loading, isAuthenticated } = useSelector((state) => state.user);
   const { adminLoading } = useSelector((state) => state.admin);
   const { productLoading, products, productDetails } = useSelector((state) => state.products)
+  const { cartLoading } = useSelector((state) => state.cart)
 
   const [productCardHovered, setProductCardHovered] = useState(null)
 
@@ -46,9 +48,9 @@ const Home = () => {
     }
   }
 
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <>
@@ -66,12 +68,17 @@ const Home = () => {
                 <CategoriesCarousel />
               </div>
               <div className="flex flex-col gap-y-[2rem]">
-                <h2 className="heading">
-                  Explore Products
-                </h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="heading">
+                    Explore Products
+                  </h2>
+                  <Link to="/products" className="bg-primary text-white px-[1.2rem] py-[0.4rem] border-[1px] border-primary hover:bg-secondary transition-colors duration-100 font-medium rounded-[2px]">
+                      View All products
+                  </Link>
+                </div>
                 <div className="flex-center flex-col gap-[3rem]">
                   <div className="grid grid-cols-4 gap-[2rem]">
-                    {products.map((product, index) => (
+                    {products.slice(0, 8).map((product, index) => (
                       <div 
                         key={index}
                         onMouseOver={() => handleProductCardHover(index)} 
@@ -99,17 +106,19 @@ const Home = () => {
                         </div>
                           <button
                             onClick={() => handleAddtoCart(product.id)} 
+                            disabled={cartLoading}
                             className={`absolute bottom-0 left-0 right-0 rounded-[0_0_3px_3px] bg-black h-[40px] text-white text-[13px] hover:bg-darkGray font-medium transition-all duration-50 ${productCardHovered === index ? "opacity-1" : "opacity-0"}`} >
-                            Add to Cart
+                            {cartLoading ? (
+                                <ButtonLoader width={20} height={20} />
+                            ) : (
+                              <>
+                                Add to Cart
+                              </>
+                            )}
                           </button>
                       </div>
                     ))}
                   </div>
-                  <Link to="/products">
-                    <Button variant="contained" sx={{ fontFamily: 'Montserrat, sans-serif', px: '1.9rem', py: '0.7rem' }}>
-                      View All products
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </div>

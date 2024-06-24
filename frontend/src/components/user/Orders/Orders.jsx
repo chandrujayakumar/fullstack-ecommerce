@@ -64,9 +64,7 @@ const Orders = () => {
     }, [allOrders, sortValue]) 
 
     useEffect(() => {
-      if(allOrders.length === 0){
         dispatch(getAllOrders())
-      }
     }, [dispatch])
   return (
     <>
@@ -128,8 +126,8 @@ const Orders = () => {
                                     >
                                         <TableCell sx={{...table_body_cell_properties, ...truncation_properties, minWidth: 200, maxWidth: 200}} align="left">{order.id}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, ...truncation_properties, minWidth: 300, maxWidth: 300}} align="left">₹{new Intl.NumberFormat('en-IN').format(order.total)}</TableCell>
-                                        <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="left">{order.status}</TableCell>
-                                        <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="left">{order.payment_status}</TableCell>
+                                        <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150, color: order.status === "Pending" ? 'red' : 'green'}} align="left">{order.status}</TableCell>
+                                        <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150, color: order.payment_status === "Completed" ? 'green' : 'red'}} align="left">{order.payment_status}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="left">{order.payment_method}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 150, maxWidth: 150}} align="right">{order.created_at.split('T')[0]}</TableCell>
                                         <TableCell sx={{...table_body_cell_properties, minWidth: 70, maxWidth: 70}} align="center">

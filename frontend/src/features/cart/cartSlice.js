@@ -21,7 +21,20 @@ const initialState = {
 const cartSlice = createSlice({
     name: 'cart',
     initialState,
-    reducers: {},
+    reducers: {
+        clearCartMessage: (state) => {
+            state.cartMessage = null;
+        },
+        clearCartError: (state) => {
+        state.cartError = null;
+        },
+        clearCartState: (state) => {
+            state.cart= [];
+            state.totalItems= 0;
+            state.totalPrice= 0;
+            state.totalMRP= 0;
+        }
+    },
     extraReducers: (builder) => {
         builder
             //add to cart pending
@@ -189,4 +202,5 @@ const cartSlice = createSlice({
     }
 })
 
+export const { clearCartMessage, clearCartError, clearCartState } = cartSlice.actions;
 export default cartSlice.reducer

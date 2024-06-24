@@ -4,8 +4,9 @@ import { Loader } from '../../../layouts'
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { addToCart, deleteItem, removeFromCart } from '../../../features/cart/cartThunks';
+import { addToCart, deleteItem, loadCart, removeFromCart } from '../../../features/cart/cartThunks';
 import { Link, useNavigate } from 'react-router-dom';
+import ButtonLoader from '../../../layouts/ButtonLoader/ButtonLoader'
 
 const Cart = () => {
 
@@ -15,6 +16,7 @@ const Cart = () => {
     const { cartLoading, cartMessage, cartError, cart, totalItems, totalPrice, totalMRP } = useSelector((state) => state.cart)
   
 
+    const [itemLoading, setItemLoading] = useState({}) 
     const [discount, setDiscount] = useState(0)
 
     const table_head_cell_properties = { fontSize: 15,fontWeight: "bold", fontFamily: "Montserrat, sans-serif", pt: 2, pb: 3, px: 2  }
@@ -25,16 +27,22 @@ const Cart = () => {
         textOverflow: 'ellipsis',
     };
 
-    const handleIncrementProduct = (product_id) => {
-        dispatch(addToCart(product_id))
+    const handleIncrementProduct = async (product_id) => {
+        setItemLoading(prevState => ({ ...prevState, [product_id]: true }));
+        dispatch(addToCart(product_id));
+        setItemLoading(prevState => ({ ...prevState, [product_id]: false }));
     }
 
-    const handleDecrementProduct = (product_id) => {
-        dispatch(removeFromCart(product_id))
+    const handleDecrementProduct = async (product_id) => {
+        setItemLoading(prevState => ({ ...prevState, [product_id]: true }));
+        dispatch(removeFromCart(product_id));
+        setItemLoading(prevState => ({ ...prevState, [product_id]: false }));
     }
 
-    const handleDeleteItem = (product_id) => {
-        dispatch(deleteItem(product_id))
+    const handleDeleteItem = async (product_id) => {
+        setItemLoading(prevState => ({ ...prevState, [product_id]: true }));
+        dispatch(deleteItem(product_id));
+        setItemLoading(prevState => ({ ...prevState, [product_id]: false }));
     }
 
     const handleCheckout = () => {
@@ -50,7 +58,7 @@ const Cart = () => {
     <>
         {cartLoading ? (
             <Loader />
-        ) : (cart.length === 0 ? (
+        ) : ( cart.length === 0 ? (
                 <div className='flex-center flex-col w-full py-[5rem] gap-[2rem]'>
                     <div className='w-full flex-center flex-col gap-[3rem]'>
                         <img className='max-w-[400px] w-full' src="/empty_cart.svg" alt="empty cart image" />
@@ -105,13 +113,19 @@ const Cart = () => {
                                                 </TableCell>
                                                 <TableCell sx={{ ...table_body_cell_properties }} align='center'>
                                                     <div className='flex-center gap-[0.7rem]'>
-                                                        <button onClick={() => handleDecrementProduct(item.id)} className='bg-primary p-[0.3rem] rounded-[2px] text-white hover:bg-secondary transition duration-150'>
-                                                            <RemoveIcon sx={{ fontSize: '21px' }} />
-                                                        </button>
-                                                        <p>{item.quantity}</p>
-                                                        <button onClick={() => handleIncrementProduct(item.id)} className='bg-primary p-[0.3rem] rounded-[2px] text-white hover:bg-secondary transition duration-150'>
-                                                            <AddIcon sx={{ fontSize: '21px' }} />
-                                                        </button>
+                                                        {itemLoading[item.id] ? (
+                                                            <ButtonLoader borderColor='#ff5151' />
+                                                        ) :(
+                                                        <>
+                                                            <button onClick={() => handleDecrementProduct(item.id)} className='bg-primary p-[0.3rem] rounded-[2px] text-white hover:bg-secondary transition duration-150'>
+                                                                <RemoveIcon sx={{ fontSize: '21px' }} />
+                                                            </button>
+                                                            <p>{item.quantity}</p>
+                                                            <button onClick={() => handleIncrementProduct(item.id)} className='bg-primary p-[0.3rem] rounded-[2px] text-white hover:bg-secondary transition duration-150'>
+                                                                <AddIcon sx={{ fontSize: '21px' }} />
+                                                            </button>
+                                                        </>
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell sx={{ ...table_body_cell_properties, fontFamily: 'Roboto, sans-serif', fontSize: '16px' }} align='right'>₹{new Intl.NumberFormat('en-IN').format(item.price * item.quantity)}</TableCell>

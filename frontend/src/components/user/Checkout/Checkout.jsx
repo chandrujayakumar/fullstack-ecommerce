@@ -26,6 +26,7 @@ import { Loader } from '../../../layouts';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { clearCart } from '../../../features/cart/cartThunks';
+import ButtonLoader from '../../../layouts/ButtonLoader/ButtonLoader';
 
 
 const Checkout = () => {
@@ -59,8 +60,7 @@ const Checkout = () => {
   const [selectedAddress, setSelectedAddress] = useState([])
   const [addNewAddress, setAddNewAddress] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('')
-
-  const steps = ['Delivery Address', 'Order Summary'];
+  const [buttonLoading, setButtonLoading] = useState(false)
 
   const handleNext = () => {
     if(activeStep === 0 && selectedAddress.length !== 0){
@@ -77,15 +77,6 @@ const Checkout = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handlePaymentMethod = (e) => {
-    setPaymentMethod(e.target.value)
-  }
-
-  const handleReset = () => {
-    setActiveStep(0);
-    setShippingAddress('');
-    setOrderSummary('');
-  };
 
   const handleAddressSelect = (index, address) => {
     setAddressIndex(index)
@@ -105,13 +96,15 @@ const Checkout = () => {
     addAddressForm.set("address", address)
 
     dispatch(addDeliveryAddress(addAddressForm))
+
   }
 
   const handleAddressDelete = (address_id) => {
-    dispatch(deleteDeliveryAddress(address_id))
+      dispatch(deleteDeliveryAddress(address_id))
   }
 
   const handleProceedCheckout = () => {
+    setButtonLoading(true)
     if(paymentMethod === "UPI" || paymentMethod === "Card" || paymentMethod === "NetBanking"){
         if(totalPrice > 1000){
             handlePaymentGatewayOpen(totalPrice)
@@ -119,6 +112,7 @@ const Checkout = () => {
             handlePaymentGatewayOpen(totalPrice + 100)
         }
     }else{
+        setButtonLoading(false)
         toast.error("Select a payment method")
     }
   }
@@ -132,7 +126,10 @@ const Checkout = () => {
         address_id: selectedAddress.id
     })
 
-    if (!order) return;
+    if (!order){
+        setButtonLoading(false)
+        return
+    };
 
     const options = {
         key,
@@ -142,8 +139,6 @@ const Checkout = () => {
         description: 'Genie - an eCommerce Web Application',
         image: "/genie-logo.svg",
         order_id: order.id,
-        // callback_url: `/api/v1/payment/verification`,
-
         prefill: {
             name: selectedAddress.fullname,
             email: selectedAddress.email,
@@ -170,14 +165,17 @@ const Checkout = () => {
             try {
               const { data } = await axios.post('/api/v1/payment/verification', verificationData);
               if (data.success) {
+                setButtonLoading(false)
                 dispatch(clearCart())
                 dispatch(getAllOrders())
                 dispatch(getOrderItems(verificationData.razorpay_order_id))
                 navigate(`/checkout/success/${verificationData.razorpay_payment_id}`);
               } else {
+                setButtonLoading(false)
                 toast.error('Payment verification failed. Please contact support.');
               }
             } catch (error) {
+              setButtonLoading(false)
               toast.error(`An error occurred during payment verification. Please try again.`);
             }
         },
@@ -193,6 +191,7 @@ const Checkout = () => {
   }
 
   const handlePaymentFailure = () => {
+    setButtonLoading(false)
     toast.error("Payment Cancelled or Failed");
   }
 
@@ -206,6 +205,8 @@ const Checkout = () => {
     setLandmark('')
     setAddress('')
     setAddNewAddress(false)
+    setSelectedAddress([])
+    setAddressIndex(null)
   }, [deliveryAddress])
 
   return (
@@ -445,8 +446,25 @@ const Checkout = () => {
                                         </Select>
                                     </FormControl>
                                     <div className='flex justify-between items-center'>
-                                        <Button onClick={handleProceedCheckout} variant='contained' sx={{ width: '100%', borderRadius: '3px', height: 45 }}>
-                                            Pay
+                                        <Button
+                                             onClick={handleProceedCheckout} 
+                                             variant='contained' 
+                                             sx={{ 
+                                                width: '100%', 
+                                                borderRadius: '3px', 
+                                                height: 45, 
+                                                '&.Mui-disabled': {
+                                                    backgroundColor: '#ff9191', // Custom background color for disabled state
+                                                    color: 'white', // Custom text color for disabled state
+                                                }, }}
+                                             disabled={buttonLoading}>
+                                            {buttonLoading ? (
+                                                <ButtonLoader/>
+                                            ) : (
+                                                <>
+                                                    Pay
+                                                </>
+                                            )}
                                         </Button>
                                     </div>
                                 </div>

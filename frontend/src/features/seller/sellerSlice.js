@@ -10,14 +10,19 @@ import {
     getProductDetails,
     deleteMultipleProducts,
     restoreProduct,
-    restoreMultipleProducts
+    restoreMultipleProducts,
+    getAllOrdersBySellerId,
+    getOrderItemsBySellerId,
+    updateOrderItemStatus
 } from './sellerThunks'
 
 const initialState = {
     seller: {},
-    sellerProducts: {},
-    sellerDeletedProducts: {},
-    productDetails: {},
+    sellerProducts: [],
+    sellerDeletedProducts: [],
+    productDetails: [],
+    allSellerOrders: [],
+    sellerOrderItems: [],
     sellerLoading: false,
     isSellerAuthenticated: false,
     sellerMessage: null,
@@ -28,6 +33,12 @@ const sellerSlice = createSlice({
     name: 'seller',
     initialState,
     reducers: {
+        clearSellerMessage: (state) => {
+            state.sellerMessage = null;
+        },
+        clearSellerError: (state) => {
+            state.sellerError = null;
+        },
         
     },
     extraReducers: (builder) => {
@@ -342,6 +353,95 @@ const sellerSlice = createSlice({
             })
 
 
+            //get all orders pending
+            .addCase(getAllOrdersBySellerId.pending, (state) => {
+                return{
+                    ...state, 
+                    sellerLoading: true,
+                    allSellerOrders: [],
+                    sellerOrderItems: [],
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //get all orders fulfilled
+            .addCase(getAllOrdersBySellerId.fulfilled, (state, action) => {
+                return{
+                    ...state, 
+                    sellerLoading: false,
+                    allSellerOrders: action.payload.orders || [],
+                }
+            })
+            
+            //get all orders rejected
+            .addCase(getAllOrdersBySellerId.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    sellerLoading: false,
+                    allSellerOrders: [],
+                }
+            })
+
+            //get order items pending
+            .addCase(getOrderItemsBySellerId.pending, (state) => {
+                return{
+                    ...state, 
+                    sellerLoading: true,
+                    sellerOrderItems: [],
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //get order items fulfilled
+            .addCase(getOrderItemsBySellerId.fulfilled, (state, action) => {
+                return{
+                    ...state, 
+                    sellerLoading: false,
+                    sellerOrderItems: action.payload.orderItems || [],
+                }
+            })
+            
+            //get order items rejected
+            .addCase(getOrderItemsBySellerId.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    sellerLoading: false,
+                    sellerOrderItems: [],
+                }
+            })
+
+            //update order item status pending
+            .addCase(updateOrderItemStatus.pending, (state) => {
+                return{
+                    ...state, 
+                    sellerLoading: true,
+                    sellerMessage: null,
+                    sellerError: null
+                }
+            })
+
+            //update order item status fulfilled
+            .addCase(updateOrderItemStatus.fulfilled, (state, action) => {
+                const { item_id, status } = action.payload
+
+                state.sellerOrderItems = state.sellerOrderItems.map(item => 
+                    item.id === item_id ? {...item, product_status: status} : item
+                );
+
+                state.sellerLoading = false
+            })
+            
+            //update order item status rejected
+            .addCase(updateOrderItemStatus.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    sellerLoading: false,
+                }
+            })
+
+
             //load seller pending
             .addCase(loadSeller.pending, (state) => {
                 return{
@@ -386,4 +486,5 @@ const sellerSlice = createSlice({
     }
 })
 
+export const { clearSellerMessage, clearSellerError } = sellerSlice.actions;
 export default sellerSlice.reducer

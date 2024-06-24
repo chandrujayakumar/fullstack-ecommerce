@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { sendotp, loginsignup, signupuser } from "../../../features/user/userThunks" 
 import { useDispatch, useSelector } from 'react-redux'
 import { LoginLoader } from '../../../layouts'
+import { loadCart } from '../../../features/cart/cartThunks'
 
 const Login = ({ trigger, setTrigger }) => {
 
@@ -49,7 +50,9 @@ const Login = ({ trigger, setTrigger }) => {
         verifyForm.set("email", tempEmail)
         verifyForm.set("otp", OTP)
 
-        dispatch(loginsignup(verifyForm))
+        dispatch(loginsignup(verifyForm)).then(() => {
+            dispatch(loadCart())
+        })
 
     }
 

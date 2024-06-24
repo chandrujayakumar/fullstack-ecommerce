@@ -37,27 +37,27 @@ const Dashboard = () => {
 
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div className="stat bg-primary p-4 rounded-sm shadow-2xl border-r-4">
+                        <div className="stat bg-primary p-4 rounded-sm shadow-lg">
                             <h2 className="text-xl font-semibold  text-white ">Total Revenue</h2>
                             <p className="text-3xl font-bold text-white">₹{new Intl.NumberFormat('en-IN').format(stats.totalRevenue)}</p>
                         </div>
-                        <div className="stat bg-primary p-4 rounded-sm shadow-2xl border-r-4">
+                        <div className="stat bg-primary p-4 rounded-sm shadow-lg">
                             <h2 className="text-xl font-semibold text-white">Total Sellers</h2>
                             <p className="text-3xl font-bold text-white">{new Intl.NumberFormat('en-IN').format(stats.totalSellers)}</p>
                         </div>
-                        <div className="stat bg-primary p-4 rounded-sm shadow-2xl border-r-4">
+                        <div className="stat bg-primary p-4 rounded-sm shadow-lg">
                             <h2 className="text-xl font-semibold text-white">Total Users</h2>
                             <p className="text-3xl font-bold text-white">{new Intl.NumberFormat('en-IN').format(stats.totalUsers)}</p>
                         </div>
-                        <div className="stat bg-primary p-4 rounded-sm shadow-2xl border-r-4">
+                        <div className="stat bg-primary p-4 rounded-sm shadow-lg">
                             <h2 className="text-xl font-semibold text-white">Total Products</h2>
                             <p className="text-3xl font-bold text-white">{new Intl.NumberFormat('en-IN').format(stats.totalProducts)}</p>
                         </div>
-                        <div className="stat bg-primary p-4 rounded-sm shadow-2xl border-r-4">
+                        <div className="stat bg-primary p-4 rounded-sm shadow-lg">
                             <h2 className="text-xl font-semibold text-white">Total Orders</h2>
                             <p className="text-3xl font-bold text-white">{new Intl.NumberFormat('en-IN').format(stats.totalOrders)}</p>
                         </div>
-                        <div className="stat bg-primary p-4 rounded-sm shadow-2xl border-r-4">
+                        <div className="stat bg-primary p-4 rounded-sm shadow-lg">
                             <h2 className="text-xl font-semibold text-white">Total Pending Orders </h2>
                             <p className="text-3xl font-bold text-white">{new Intl.NumberFormat('en-IN').format(stats.totalPendingOrders)}</p>
                         </div>
