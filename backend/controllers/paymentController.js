@@ -79,7 +79,7 @@ exports.paymentVerification = catchAsyncErrors(async(req, res, next) => {
 
                 for (let i = 0; i < cartItems.length; i++) {
                     const uuid = generate_uuid()
-                    await connection.execute('INSERT INTO order_items (id, order_id, product_id, seller_id, quantity, price, mrp) VALUES (?, ?, ?, ?, ?, ?, ?)', [uuid, razorpay_order_id, cartItems[i].product_id, cartItems[i].seller_id, cartItems[i].quantity, cartItems[i].price, cartItems[i].mrp]);
+                    await connection.execute('INSERT INTO order_items (id, order_id, product_id, seller_id, quantity, price, mrp, product_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [uuid, razorpay_order_id, cartItems[i].product_id, cartItems[i].seller_id, cartItems[i].quantity, cartItems[i].price, cartItems[i].mrp, "Pending"]);
                 }
 
                 await connection.commit();
@@ -87,13 +87,11 @@ exports.paymentVerification = catchAsyncErrors(async(req, res, next) => {
                 res.status(200).json({
                     success: true
                 })
-
-                // return res.redirect(`/checkout/success/${razorpay_payment_id}`);
             } else {
                 await connection.rollback();
                 connection.release();
 
-                return next(new errorHandler('Order not found or already processed'));
+                return next(new errorHandler('Order not found or already processed', 404));
             }
 
         } catch (error) {
@@ -102,11 +100,11 @@ exports.paymentVerification = catchAsyncErrors(async(req, res, next) => {
                 connection.release();
             }
 
-            return next(new errorHandler(`Database error: ${error.message}`));
+            return next(new errorHandler(`Something went wrong`, 500));
         }
 
     } else {
-        return next(new errorHandler('Payment verification failed'));
+        return next(new errorHandler('Payment verification failed', 400));
     }
 })
 

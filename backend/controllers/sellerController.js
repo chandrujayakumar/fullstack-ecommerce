@@ -550,3 +550,138 @@ exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler('Something went wrong', 500))
     }
 })
+
+
+
+//get all orders by seller id
+
+exports.getAllOrdersBySellerId = catchAsyncErrors(async(req, res, next) => {
+  const { id } = req.user[0][0]
+
+  const sellerId = id
+
+  if(!sellerId){
+      return next(new errorHandler("You're not logged in", 400))
+  }
+
+  try{
+      const [orderIds] = await pool.execute('SELECT DISTINCT order_id FROM order_items WHERE seller_id = ?', [sellerId])
+
+      const orderIdsArray = orderIds.map(row => row.order_id);
+      const placeholders = orderIdsArray.map(() => '?').join(',');
+      const query = `
+      SELECT 
+        o.id, 
+        o.user_id, 
+        o.delivery_address_id, 
+        o.total, 
+        o.status, 
+        o.payment_id, 
+        o.payment_status, 
+        o.payment_method, 
+        o.created_at,
+        SUM(oi.quantity * oi.price) AS total_price
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
+      WHERE o.id IN (${placeholders})
+      AND oi.seller_id = ?
+      AND o.payment_status IS NOT NULL 
+      AND o.payment_id IS NOT NULL
+      GROUP BY o.id, o.user_id, o.delivery_address_id, o.total, o.status, o.payment_id, o.payment_status, o.payment_method, o.created_at
+    `;
+      const [orders] = await pool.execute(query, [...orderIdsArray, sellerId])
+
+
+      if(orders.length > 0){
+          res.status(200).json({
+              success: true,
+              orders
+          })
+      }else{
+          return next(new errorHandler("No Orders Found", 404))
+      }
+  }catch(error){
+      return next(new errorHandler(`Something went wrong ${error}`, 500))
+  }
+})
+
+//get order items by order id
+
+exports.getOrderItemsBySellerId = catchAsyncErrors(async(req, res, next) => {
+  const { order_id } = req.params
+  const { id } = req.user[0][0]
+
+  const sellerId = id
+
+  if(!order_id){
+      return next(new errorHandler("Order id not provided", 400))
+  }
+
+  try{
+      const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, oi.product_status, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ? AND oi.seller_id = ?', [order_id, sellerId])
+
+      if(orderItems.length > 0){
+          res.status(200).json({
+              success: true,
+              orderItems
+          })
+      }else{
+          return next(new errorHandler('Order Not Found', 404))
+      }
+  }catch(error){
+      return next(new errorHandler(`Something went wrong`, 500))
+  }
+})
+
+//change order status
+
+exports.updateOrderItemStatus = catchAsyncErrors(async(req, res, next) => {
+  const { order_id, item_id, status } = req.body
+
+  if(!item_id){
+      return next(new errorHandler("item id not provided", 400))
+  }
+
+  const [previousStatus] = await pool.execute('SELECT product_status from order_items WHERE id = ?', [item_id])
+
+  try{
+      if(previousStatus[0].product_status === status){
+          return next(new errorHandler(`already in '${status}' status`, 400))
+      }else if(status === "Delivered"){
+          const [deliveredProductsCount] = await pool.execute('SELECT COUNT(order_id) AS order_id_count FROM order_items WHERE order_id = ? AND product_status = "Delivered"', [order_id])
+          const [orderItemsCount] = await pool.execute('SELECT COUNT(order_id) AS order_id_count FROM order_items WHERE order_id = ?', [order_id])
+
+
+          if(deliveredProductsCount[0].order_id_count === (orderItemsCount[0].order_id_count - 1)){
+            await pool.execute('UPDATE order_items SET product_status = ? WHERE id = ?', [status, item_id])
+            await pool.execute('UPDATE orders SET status = "Delivered" WHERE id = ?', [order_id])
+
+            res.status(200).json({
+                success: true,
+                message: `Status updated to '${status}'`,
+                item_id, 
+                status
+            })
+            
+          }
+
+          await pool.execute('UPDATE order_items SET product_status = ? WHERE id = ?', [status, item_id])
+          res.status(200).json({
+            success: true,
+            message: `Status updated to '${status}'`,
+            item_id, 
+            status
+        })
+      }else{
+          await pool.execute('UPDATE order_items SET product_status = ? WHERE id = ?', [status, item_id])
+          res.status(200).json({
+              success: true,
+              message: `Status updated to '${status}'`,
+              item_id, 
+              status
+          })
+      }
+  }catch(err){
+      return next(new errorHandler(`No item found with this id`, 404))
+  }
+})

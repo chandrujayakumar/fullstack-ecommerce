@@ -8,7 +8,7 @@ const errorHandler = require("../utils/errorHandler")
 exports.getAllProducts = catchAsyncErrors(async(req, res, next) => {
     
     try{
-        const [allProducts] = await pool.execute('SELECT * FROM products;')
+        const [allProducts] = await pool.execute('SELECT * FROM products WHERE is_deleted = 0')
         
         if(allProducts.length > 0) {
             res.status(200).json({
@@ -26,15 +26,15 @@ exports.getAllProducts = catchAsyncErrors(async(req, res, next) => {
 //get product details
 
 exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
-    const { product_id } = req.body
+    const { product_id } = req.params
 
     if(!product_id){
         return next(new errorHandler("product id not provided", 400))
     }
 
     try{
-        const [productDetails] = await pool.execute('SELECT * FROM products WHERE id = ?', product_id)
-        
+        const [productDetails] = await pool.execute('SELECT * FROM products WHERE id = ?', [product_id])
+
         if(productDetails.length > 0){
             res.status(200).json({
                 success: true,
@@ -44,6 +44,6 @@ exports.getProductDetails = catchAsyncErrors(async(req, res, next) => {
             return next(new errorHandler("Product not found" ,404))
         }
     }catch(error){
-        return next(new errorHandler("Something went wrong", 500))
+        return next(new errorHandler(`Something went wrong ${error}`, 500))
     }
 })

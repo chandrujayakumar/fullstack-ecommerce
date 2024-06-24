@@ -179,12 +179,15 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
     try{
         const [user] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId])
         const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
+        const [allDeliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
+
 
         if(user.length > 0){
             res.status(200).json({
                 success: true,
                 user,
                 deliveryAddress,
+                allDeliveryAddress,
                 cartId
             })
         }else{
@@ -194,6 +197,9 @@ exports.getuserdetails = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler(`Something Went Wrong`, 500))
     }
 })
+
+
+
 
 // add new delivery address
 
@@ -209,11 +215,13 @@ exports.addDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
         const uuid = generate_uuid()
         await pool.execute('INSERT INTO delivery_address (id, user_id, fullname, mobile_number, alternate_phone_number, pincode, address, city, state, landmark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [uuid, userId, fullname, phone_number, alternate_phone_number, pincode, address, city, state, landmark])
         const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
+        const [allDeliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
 
         res.status(200).json({
             success: true,
             message: 'Address added successfully',
-            deliveryAddress
+            deliveryAddress,
+            allDeliveryAddress
         })
     }catch(error){
         return next(new errorHandler(`Something went wrong` ,500))
@@ -234,11 +242,13 @@ exports.deleteDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
     try{
         await pool.execute('UPDATE delivery_address SET is_deleted = 1 WHERE id = ? AND user_id = ?', [address_id, userId])
         const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
+        const [allDeliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
 
         res.status(200).json({
             success: true,
             message: 'Address deleted successfully',
-            deliveryAddress
+            deliveryAddress,
+            allDeliveryAddress
         })
     }catch(error){
         return next(new errorHandler(`Something went wrong ${error}` ,500))
@@ -264,11 +274,15 @@ exports.getAllOrders = catchAsyncErrors(async(req, res, next) => {
 
     try{
         const [orders] = await pool.execute('SELECT * FROM orders WHERE user_id = ? AND payment_status IS NOT NULL AND payment_id IS NOT NULL', [userId])
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId])
+        const [allDeliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ?', [userId])
 
         if(orders.length > 0){
             res.status(200).json({
                 success: true,
-                orders
+                orders,
+                deliveryAddress,
+                allDeliveryAddress
             })
         }else{
             return next(new errorHandler("No Orders Found", 404))
@@ -288,7 +302,7 @@ exports.getOrderItems = catchAsyncErrors(async(req, res, next) => {
     }
 
     try{
-        const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ?', [order_id])
+        const [orderItems] = await pool.execute('SELECT oi.id, oi.order_id, oi.product_id, oi.seller_id, oi.quantity, oi.price, oi.mrp, oi.product_status, p.image_url, p.name FROM order_items oi, products p WHERE oi.product_id = p.id AND order_id = ?', [order_id])
 
         if(orderItems.length > 0){
             res.status(200).json({

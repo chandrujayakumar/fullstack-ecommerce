@@ -85,6 +85,7 @@ CREATE TABLE order_items (
     quantity INT NOT NULL,
     price INT NOT NULL,
     mrp INT NOT NULL,
+    product_status VARCHAR(50) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (seller_id) REFERENCES sellers(id)
@@ -110,6 +111,7 @@ drop table products;
 drop table cart_items;
 drop table orders;
 drop table order_items;
+drop table delivery_address;
 drop table users;
 drop table admins;
 

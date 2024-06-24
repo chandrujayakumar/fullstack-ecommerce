@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts, restoreProduct, restoreMultipleProducts } = require("../controllers/sellerController")
+const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts, restoreProduct, restoreMultipleProducts, getAllOrdersBySellerId, getOrderItemsBySellerId, updateOrderItemStatus } = require("../controllers/sellerController")
 const { isSellerAuthenticated } = require("../middleware/auth")
 const uploadImage = require("../middleware/imageUpload")
 const { validateEmail, validateLogin, validateSellerApplication, validateSellerProducts, validateAll } = require("../middleware/validation")
@@ -47,5 +47,14 @@ router.route("/getproducts").get(isSellerAuthenticated, getProducts)
 
 //get product details
 router.route("/getproductdetails/:product_id").get(isSellerAuthenticated, getProductDetails)
+
+//get all orders by seller id
+router.route("/orders").get(isSellerAuthenticated, getAllOrdersBySellerId)
+
+//get all order items by seller id and order id
+router.route("/order/items/:order_id").get(isSellerAuthenticated, getOrderItemsBySellerId)
+
+//update order item status
+router.route("/order/item/updatestatus").post(isSellerAuthenticated, updateOrderItemStatus)
 
 module.exports = router 
