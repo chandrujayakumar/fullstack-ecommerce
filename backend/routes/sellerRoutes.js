@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts, restoreProduct, restoreMultipleProducts, getAllOrdersBySellerId, getOrderItemsBySellerId, updateOrderItemStatus } = require("../controllers/sellerController")
+const { sellerApplication, sellerLogin, sellerLogout, addProduct, getSellerDetails, deleteProduct, updateProductDetails, getProducts, getProductDetails, deleteMultipleProducts, restoreProduct, restoreMultipleProducts, getAllOrdersBySellerId, getOrderItemsBySellerId, updateOrderItemStatus, getSellerOrders} = require("../controllers/sellerController")
 const { isSellerAuthenticated } = require("../middleware/auth")
 const uploadImage = require("../middleware/imageUpload")
 const { validateEmail, validateLogin, validateSellerApplication, validateSellerProducts, validateAll } = require("../middleware/validation")
@@ -16,7 +16,7 @@ router.route("/login").post(validateLogin, sellerLogin)
 router.route("/logout").post(isSellerAuthenticated, sellerLogout)
 
 //seller dashboard
-router.route("/dashboard").get(isSellerAuthenticated, getSellerDetails)
+router.route("/dashboard").get(isSellerAuthenticated, getSellerOrders)
 
 //add product
 router.route("/addproduct").post(isSellerAuthenticated, uploadImage, addProduct)

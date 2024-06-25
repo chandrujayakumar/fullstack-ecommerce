@@ -236,3 +236,16 @@ export const loadSeller = createAsyncThunk("seller/dashboard", async(thunkAPI) =
         }
     }
 })
+
+export const getSellerOrders = createAsyncThunk('seller/getSellerOrders', async (_,thunkAPI) => {
+    try {
+        const { data } = await axios.get('/api/v1/seller/dashboard');
+        return data;
+    } catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+});

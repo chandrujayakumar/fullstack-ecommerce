@@ -685,3 +685,78 @@ exports.updateOrderItemStatus = catchAsyncErrors(async(req, res, next) => {
       return next(new errorHandler(`No item found with this id`, 404))
   }
 })
+
+// Get seller orders
+exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.user[0][0];
+
+  try {
+      const [orderItems] = await pool.execute(
+        `SELECT 
+        oi.id AS order_item_id,
+        oi.order_id,
+        oi.product_id,
+        oi.seller_id,
+        oi.quantity,
+        oi.price AS order_item_price,
+        oi.mrp AS order_item_mrp,
+        oi.product_status,
+        o.id AS order_id,
+        o.user_id,
+        o.delivery_address_id,
+        o.total AS order_total,
+        o.status AS order_status,
+        o.payment_id,
+        o.payment_status,
+        o.payment_method,
+        o.created_at AS order_created_at,
+        p.id AS product_id,
+        p.seller_id AS product_seller_id,
+        p.name AS product_name,
+        p.description AS product_description,
+        p.category AS product_category,
+        p.price AS product_price,
+        p.mrp AS product_mrp,
+        p.stock AS product_stock,
+        p.image_url AS product_image_url,
+        p.created_at AS product_created_at,
+        p.updated_at AS product_updated_at,
+        p.is_deleted AS product_is_deleted
+    FROM 
+        order_items oi 
+    JOIN 
+        orders o ON oi.order_id = o.id 
+    JOIN 
+        products p ON oi.product_id = p.id 
+    WHERE 
+        p.seller_id = ?;`,  
+          [id]
+      );
+
+       if (orderItems.length > 0) {
+           let totalSales = 0;
+           let totalOrders = new Set();
+           let totalProductsSold = 0;
+
+           orderItems.forEach(item => {
+               totalSales += item.order_item_price * item.quantity;
+               totalOrders.add(item.order_id);
+               totalProductsSold += item.quantity;
+           });
+
+          res.status(200).json({
+              success: true,
+              orders: orderItems,
+               stats: {
+                   totalSales,
+                   totalOrders: totalOrders.size,
+                   totalProductsSold
+               }
+          });
+      } else {
+          return next(new errorHandler('No orders found', 404));
+      }
+  } catch (error) {
+      return next(new errorHandler(`Something went wrong ${id}`, 500));
+  }
+});
