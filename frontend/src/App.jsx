@@ -11,7 +11,7 @@ import Orders from './components/user/Orders/Orders'
 import { Login, Dashboard, ManageSellers, ManageAdmins, ManageUsers, ManageOrders, ManageSellerApplications } from './components/admin'
 import { SellerLogin, Apply, MainPage, SellerDashboard, SellerProducts, AddProduct, DeletedProducts } from './components/seller'
 import { getAllOrders, loaduser } from './features/user/userThunks'
-import { loadSeller } from './features/seller/sellerThunks'
+import { getSellerOrders, loadSeller } from './features/seller/sellerThunks'
 import { loadadminuser } from './features/admin/adminThunks'
 import { getAllProducts } from './features/products/productsThunks'
 import { useDispatch, useSelector } from 'react-redux'
@@ -51,6 +51,7 @@ function App() {
       dispatch(getAllProducts())
       dispatch(loadCart())
       dispatch(getAllOrders())
+      dispatch(getSellerOrders())
       hasLoadedUser.current = true
     }
 

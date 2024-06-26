@@ -494,6 +494,7 @@ const sellerSlice = createSlice({
                 return {
                     ...state,
                     sellerLoading: true,
+                    sellerMessage: null,
                     sellerError: null 
                 };
             })

@@ -239,7 +239,7 @@ export const loadSeller = createAsyncThunk("seller/dashboard", async(thunkAPI) =
 
 export const getSellerOrders = createAsyncThunk('seller/getSellerOrders', async (_,thunkAPI) => {
     try {
-        const { data } = await axios.get('/api/v1/seller/dashboard');
+        const { data } = await axios.get('/api/v1/seller/getsellerorders');
         return data;
     } catch(error){
         if(error.response){

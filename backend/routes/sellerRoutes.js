@@ -16,7 +16,10 @@ router.route("/login").post(validateLogin, sellerLogin)
 router.route("/logout").post(isSellerAuthenticated, sellerLogout)
 
 //seller dashboard
-router.route("/dashboard").get(isSellerAuthenticated, getSellerOrders)
+router.route("/dashboard").get(isSellerAuthenticated, getSellerDetails)
+
+//seller orders
+router.route("/getsellerorders").get(isSellerAuthenticated, getSellerOrders)
 
 //add product
 router.route("/addproduct").post(isSellerAuthenticated, uploadImage, addProduct)
