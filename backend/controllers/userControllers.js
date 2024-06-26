@@ -259,6 +259,37 @@ exports.deleteDeliveryAddress = catchAsyncErrors(async(req, res, next) => {
 //update user 
 
 exports.updateUser = catchAsyncErrors(async(req, res, next) => {
+    const { email, fullname } = req.body
+    
+    if(!fullname){
+        return next(new errorHandler("Enter fullname", 400))
+    }
+
+    if(!email){
+        return next(new errorHandler("Enter the email", 400))
+    }
+
+    const trimmedFullname = fullname.trim()
+    const validation = validateFullname(trimmedFullname)
+
+    try{
+        if(validation){            
+            await pool.execute('UPDATE users SET fullname = ? WHERE email = ?', [trimmedFullname, email])
+            
+            const [user] = await pool.execute('SELECT * FROM users WHERE email = ?', [email])
+            
+            
+            res.status(200).json({
+                success: true,
+                message: 'Name updated successfully',
+                user,
+            })
+        }else{
+            return next(new errorHandler(`Invalid Full name`, 400))
+        }
+    }catch(err){
+        return next(new errorHandler(`Something Went Wrong`, 500))
+    }
     
 })
 
@@ -316,3 +347,29 @@ exports.getOrderItems = catchAsyncErrors(async(req, res, next) => {
         return next(new errorHandler(`Something went wrong`, 500))
     }
 })
+
+
+// update Delivery Address
+exports.updateAddress = catchAsyncErrors(async (req, res, next) => {
+    const {id, fullname, mobile_number, alternate_phone_number, pincode, state, city, landmark, address } = req.body;
+    const { userId } = req.user[0][0];
+
+    if (!fullname || !mobile_number || !pincode || !state || !city || !address) {
+        return next(new errorHandler("Enter all required fields", 400));
+    }
+
+    try {
+        await pool.execute('UPDATE delivery_address SET fullname = ?, mobile_number = ?, alternate_phone_number = ?, pincode = ?, address = ?, city = ?, state = ?, landmark = ? WHERE id = ?', 
+            [fullname, mobile_number, alternate_phone_number, pincode, address, city, state, landmark, id]);
+
+        const [deliveryAddress] = await pool.execute('SELECT * FROM delivery_address WHERE user_id = ? AND is_deleted = 0', [userId]);
+
+        res.status(200).json({
+            success: true,
+            message: 'Address updated successfully',
+            deliveryAddress,
+        });
+    } catch (error) {
+        return next(new errorHandler("Something went wrong", 500));
+    }
+});
