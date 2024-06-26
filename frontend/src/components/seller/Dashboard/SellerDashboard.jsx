@@ -23,10 +23,6 @@ const SellerDashboard = () => {
         dispatch(getSellerOrders());
     }, [dispatch]);
 
-    useEffect(() => {
-        console.log("Stats:", stats);
-    }, [stats]);
-
     if (sellerLoading) return <Loader />;
     if (sellerError) return <Typography color="error">{sellerError}</Typography>;
 

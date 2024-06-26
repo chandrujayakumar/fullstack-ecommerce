@@ -733,29 +733,25 @@ exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
           [id]
       );
 
-       if (orderItems.length > 0) {
-           let totalSales = 0;
-           let totalOrders = new Set();
-           let totalProductsSold = 0;
+      let totalSales = 0;
+      let totalOrders = new Set();
+      let totalProductsSold = 0;
 
-           orderItems.forEach(item => {
-               totalSales += item.order_item_price * item.quantity;
-               totalOrders.add(item.order_id);
-               totalProductsSold += item.quantity;
-           });
+      orderItems.forEach(item => {
+          totalSales += item.order_item_price * item.quantity;
+          totalOrders.add(item.order_id);
+          totalProductsSold += item.quantity;
+      });
 
-          res.status(200).json({
-              success: true,
-              orders: orderItems,
-               stats: {
-                   totalSales,
-                   totalOrders: totalOrders.size,
-                   totalProductsSold
-               }
-          });
-      } else {
-          return next(new errorHandler('No orders found', 404));
-      }
+    res.status(200).json({
+        success: true,
+        orders: orderItems,
+          stats: {
+              totalSales,
+              totalOrders: totalOrders.size,
+              totalProductsSold
+          }
+    });
   } catch (error) {
       return next(new errorHandler(`Something went wrong ${id}`, 500));
   }
