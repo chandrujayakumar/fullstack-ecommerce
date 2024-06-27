@@ -148,3 +148,34 @@ export const loaduser = createAsyncThunk("user/loaduser", async(thunkAPI) => {
         }
     }
 })
+
+//update delivery address
+export const updateAddress = createAsyncThunk("user/updateAddress", async(form, thunkAPI) => {
+    try{
+        const config = { headers : { "Content-Type" : "application/json" }};
+        const { data } = await axios.post('/api/v1/user/updateAddress', form, config)
+
+        return data
+    }catch(error){
+        if(error.response){
+            return thunkAPI.rejectWithValue(error.response.data)
+        }else{
+            return thunkAPI.rejectWithValue({ message: error.message })
+        }
+    }
+})
+
+//update user fullname
+export const updateFullName = createAsyncThunk('user/updateFullName', async ({ email, fullname }, thunkAPI) => {
+        try {
+            const { data } = await axios.post('/api/v1/user/updateUser', { email, fullname });
+            return data;
+        } catch(error){
+            if(error.response){
+                return thunkAPI.rejectWithValue(error.response.data)
+            }else{
+                return thunkAPI.rejectWithValue({ message: error.message })
+            }
+        }
+    }
+);

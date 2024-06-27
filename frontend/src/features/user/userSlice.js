@@ -8,7 +8,9 @@ import {
     addDeliveryAddress,
     deleteDeliveryAddress,
     getAllOrders,
-    getOrderItems
+    getOrderItems,
+    updateAddress,
+    updateFullName
 } from './userThunks'
 import { clearCartState } from "../cart/cartSlice";
 
@@ -407,9 +409,60 @@ const userSlice = createSlice({
                     error: action.payload
                 }
             })
+             //add Delivery Address pending
+             .addCase(updateAddress.pending, (state) => {
+                return{
+                    ...state, 
+                    loading: true,
+                    message: null,
+                    error: null
+                }
+            })
+            .addCase(updateAddress.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    deliveryAddress : action.payload.deliveryAddress,
+                    allDeliveryAddress : action.payload.deliveryAddress,
+                    message: action.payload.message
+
+                }
+            })
+            //add delivery address rejected
+            .addCase(updateAddress.rejected, (state, action) => {
+                return{
+                    ...state, 
+                    loading: false,
+                    error: action.payload
+                }
+            })
+            // Handle the full name update
+            .addCase(updateFullName.pending, (state) => {
+                return{
+                    ...state, 
+                    loading: true,
+                    message: null,
+                    error: null
+                }
+            })
+            .addCase(updateFullName.fulfilled, (state, action) => {
+                return{
+                    ...state,
+                    loading: false,
+                    user: action.payload.user,
+                }
+                
+            })
+            .addCase(updateFullName.rejected, (state, action) => {
+                return {
+                    ...state,
+                    loading: false,
+                    error: action.payload,    
+                }            
+            })
     } 
 })
 
 
 export const { clearUserMessage, clearUserError } = userSlice.actions;
 export default userSlice.reducer
+
