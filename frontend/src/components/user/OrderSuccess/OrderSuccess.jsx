@@ -79,7 +79,7 @@ const OrderSuccess = () => {
                     <div className='flex gap-[1rem]'>
                         <div className='flex-[2] flex flex-col gap-[1rem]'>
                             <div className='bg-white shadow-md rounded-[4px] p-[1.5rem] flex flex-col gap-[0.5rem] border-[1px] border-lightGray3'>
-                                <h2 className='font-bold text-[16px] bg-primary rounded-[4px_4px_0_0] text-white px-[1.5rem] py-[1rem] mb-[0.3rem]'>Delivery Address</h2>
+                                <h2 className='font-bold text-[20px] border-b-[1px] border-b-lightGray3 pb-[0.7rem] mb-[0.3rem] text-darkGray'>Delivery Address</h2>
                                 <div className='flex flex-col'>
                                     <h3 className='font-bold text-[17px] mb-[0.2rem]'>{selectedDeliveryAddress.fullname}</h3>
                                     <p className='text-[15px]'>{selectedDeliveryAddress.address}, {selectedDeliveryAddress.landmark}</p>

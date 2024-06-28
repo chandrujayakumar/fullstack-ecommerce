@@ -746,11 +746,11 @@ exports.getSellerOrders = catchAsyncErrors(async (req, res, next) => {
     res.status(200).json({
         success: true,
         orders: orderItems,
-        stats: {
-            totalSales,
-            totalOrders: totalOrders.size,
-            totalProductsSold
-        }
+          stats: {
+              totalSales,
+              totalOrders: totalOrders.size,
+              totalProductsSold
+          }
     });
   } catch (error) {
       return next(new errorHandler(`Something went wrong ${id}`, 500));

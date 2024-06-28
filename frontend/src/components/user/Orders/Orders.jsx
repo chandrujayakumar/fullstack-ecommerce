@@ -2,11 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllOrders } from '../../../features/user/userThunks'
 import { Loader } from '../../../layouts'
-import { Breadcrumbs, FormControl, IconButton, InputLabel, MenuItem, OutlinedInput, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material'
+import { FormControl, IconButton, InputLabel, MenuItem, OutlinedInput, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material'
 import InfoIcon from '@mui/icons-material/Info';
-import { Link, useNavigate } from 'react-router-dom'
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
+import { useNavigate } from 'react-router-dom'
 
 const Orders = () => {
 
@@ -85,15 +83,8 @@ const Orders = () => {
                     </div>
                 ):(
                 <>
-                    <div className='w-full flex-center mb-[1rem]'>
-                        <div className='flex justify-start items-start max-w-[1380px] w-full'>
-                            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-                                <Link to="/" className='hover:underline ' color="inherit">
-                                    Home
-                                </Link>
-                                <p className='text-primary '>Orders</p>
-                            </Breadcrumbs>
-                        </div>
+                    <div className='w-full flex-center'>
+                        <h1 className='font-extrabold text-[30px] text-mediumGray'>My Orders</h1>
                     </div>
                     <div className='flex justify-between w-full'>
                         <div className='flex gap-[1rem]'>

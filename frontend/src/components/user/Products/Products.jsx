@@ -1,15 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../../features/cart/cartThunks';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import StarIcon from '@mui/icons-material/Star';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Rating, Select, Pagination, Breadcrumbs  } from '@mui/material';
+import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Rating, Select, Pagination  } from '@mui/material';
 import { Loader } from '../../../layouts';
 import { categories } from '../data';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+
+
+
 
 const ITEM_HEIGHT = 48; 
 const ITEM_PADDING_TOP = 8;
@@ -36,7 +38,6 @@ const Products = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { search_term } = useParams()
 
     const { productLoading, productDetails, products } = useSelector((state) => state.products)
     const { loading, isAuthenticated } = useSelector((state) => state.user);
@@ -84,19 +85,18 @@ const Products = () => {
         }
     };
     
-        const filterProducts = (products, categories, searchTerm) => {
+        const filterProducts = (products, categories) => {
         
             return products.filter(product => {
                 const matchesCategory = categories.length === 0 || categories.includes(product.category)
-                const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-
-                return matchesCategory && matchesSearchTerm
+                
+                return matchesCategory
             })
         }
     
         const sortedAndFilteredProducts = useMemo(() => {
-            return sortProducts(filterProducts(products, categoryName, search_term ? search_term : ''), sortValue);
-        }, [products, categoryName, sortValue, search_term]) 
+            return sortProducts(filterProducts(products, categoryName), sortValue);
+        }, [products, categoryName, sortValue]) 
 
       useEffect(() => {
         window.scrollTo(0, 0);
@@ -119,15 +119,8 @@ const Products = () => {
         ) : (
             <>
                 <div className='flex flex-col w-full items-center py-[2rem] gap-[1rem]'>
-                    <div className='flex justify-start items-start max-w-[1200px] w-full'>
-                        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-                            <Link to="/" className='hover:underline ' color="inherit">
-                                Home
-                            </Link>
-                            <p className='text-primary '>All Products</p>
-                        </Breadcrumbs>
-                    </div>
-                    <div className='flex flex-col w-full max-w-[1200px] gap-[1rem]'>
+                    <h2 className='self-center font-extrabold text-darkGray text-[30px]'>All Products</h2>
+                    <div className='flex flex-col w-full max-w-[1380px] gap-[1rem]'>
                         <div className='w-full flex justify-end items-center gap-[2rem]'>
                             <FormControl size='small' sx={{ minWidth: 150 }}>
                                 <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Category</InputLabel>

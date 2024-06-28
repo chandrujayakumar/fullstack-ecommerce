@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { CgUnavailable } from "react-icons/cg";
 import { Link } from 'react-router-dom';
 
 const NotFound = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
   return (
     <>
      <div className='w-full h-[90vh] pb-[5rem]'>

@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getProductDetails } from '../../../features/products/productsThunks'
 import StarIcon from '@mui/icons-material/Star';
 import { Loader } from '../../../layouts'
-import { Breadcrumbs, Rating } from '@mui/material'
+import { Rating } from '@mui/material'
 import { toast } from 'react-toastify';
 import ButtonLoader from '../../../layouts/ButtonLoader/ButtonLoader';
 import { addToCart } from '../../../features/cart/cartThunks';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
 
 const ProductDetails = () => {
   const dispatch = useDispatch()
@@ -49,16 +47,6 @@ const ProductDetails = () => {
         <Loader />
       ) : (
         <>
-          <div className='w-full flex-center'>
-              <div className='flex justify-start items-start max-w-[1200px] w-full mt-[1rem]'>
-                  <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-                      <Link to="/" className='hover:underline ' color="inherit">
-                          Home
-                      </Link>
-                      <p className='text-primary text-ellipsis whitespace-nowrap overflow-hidden max-w-[170px]'>{productDetails.map((product) => product.name)}</p>
-                  </Breadcrumbs>
-              </div>
-          </div>
           <div className='flex justify-center w-full py-[2rem]'>
             <div className='max-w-[1100px] w-full flex'>
               {productDetails.map((product, key) => (
