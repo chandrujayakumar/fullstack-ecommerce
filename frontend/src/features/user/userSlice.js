@@ -423,7 +423,8 @@ const userSlice = createSlice({
                     ...state,
                     deliveryAddress : action.payload.deliveryAddress,
                     allDeliveryAddress : action.payload.deliveryAddress,
-                    message: action.payload.message
+                    message: action.payload.message,
+                    loading: false,
 
                 }
             })
