@@ -11,6 +11,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { addToCart } from "../../../features/cart/cartThunks";
+import { FaTruckFast } from "react-icons/fa6";
+import { RiCustomerServiceLine } from "react-icons/ri";
+import { GoShieldCheck } from "react-icons/go";
 
 const Home = () => {
 
@@ -49,7 +52,7 @@ const Home = () => {
   }
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
   }, []);
 
   return (
@@ -118,6 +121,37 @@ const Home = () => {
                           </button>
                       </div>
                     ))}
+                  </div>
+                </div>
+              </div>
+              <div className="w-full flex justify-center my-[6rem]">
+                <div className="flex max-w-[1000px] w-full justify-between">
+                  <div className="flex-center flex-col gap-[1rem]">
+                    <div className="flex-center text-white text-[45px] w-[120px] h-[120px] bg-black shadow-lg rounded-full">
+                      <FaTruckFast />
+                    </div>
+                    <div className="flex-center flex-col">
+                      <h3 className="font-bold text-[17px]">FREE AND FAST DELIVERY</h3>
+                      <p className="text-[13px]">Free delivery for orders over ₹1000</p>
+                    </div>
+                  </div>
+                  <div className="flex-center flex-col gap-[1rem]">
+                    <div className="flex-center text-white text-[45px] w-[120px] h-[120px] bg-black shadow-lg rounded-full">
+                      <RiCustomerServiceLine />
+                    </div>
+                    <div className="flex-center flex-col">
+                      <h3 className="font-bold text-[17px]">24/7 CUSTOMER SERVICE</h3>
+                      <p className="text-[13px]">Customer support is always there for you</p>
+                    </div>
+                  </div>
+                  <div className="flex-center flex-col gap-[1rem]">
+                    <div className="flex-center text-white text-[45px] w-[120px] h-[120px] bg-black shadow-lg rounded-full">
+                      <GoShieldCheck />
+                    </div>
+                    <div className="flex-center flex-col">
+                      <h3 className="font-bold text-[17px]">SECURE PAYMENTS</h3>
+                      <p className="text-[13px]">Secure online transactions</p>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -6,9 +6,9 @@ import { toast } from 'react-toastify';
 import StarIcon from '@mui/icons-material/Star';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Rating, Select, Pagination, Breadcrumbs  } from '@mui/material';
+import { Checkbox, FormControl, InputLabel, ListItemText, MenuItem, Rating, Select, Pagination, Breadcrumbs, Typography  } from '@mui/material';
 import { Loader } from '../../../layouts';
-import { categories } from '../data';
+import { categoriesWithLinks } from '../data';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const ITEM_HEIGHT = 48; 
@@ -32,18 +32,18 @@ const MenuProps = {
 
 
 
-const Products = () => {
+const CategorizedProducts = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { search_term } = useParams()
+    const { category: urlCategory } = useParams()
 
     const { productLoading, productDetails, products } = useSelector((state) => state.products)
     const { loading, isAuthenticated } = useSelector((state) => state.user);
   
     const [productCardHovered, setProductCardHovered] = useState(null)
     const [sortValue, setSortValue] = useState('')
-    const [categoryName, setCategoryName] = useState([])
+    const [categoryName, setCategoryName] = useState('')
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 12;
   
@@ -65,14 +65,20 @@ const Products = () => {
         }
       }
 
+      useEffect(() => {
+        window.scrollTo(0, 0);
+        if (urlCategory) {
+            const foundCategory = categoriesWithLinks.find(cat => cat.link === urlCategory);
+            if (foundCategory) {
+                setCategoryName(foundCategory.name)
+            }
+        }
+      }, [urlCategory]);
+
       const handleSortValueChange = (e) => {
         setSortValue(e.target.value)
       }
 
-      const handleCategoryNameChange = (event) => {
-        setCategoryName(event.target.value);
-      }
-    
       const sortProducts = (products, sortValue) => {
         switch (sortValue) {
             case 'L2H':
@@ -84,33 +90,20 @@ const Products = () => {
         }
     };
     
-        const filterProducts = (products, categories, searchTerm) => {
-        
-            return products.filter(product => {
-                const matchesCategory = categories.length === 0 || categories.includes(product.category)
-                const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        const filteredProducts = useMemo(() => {
+            let filtered = [...products];
+            if (categoryName) {
+                filtered = filtered.filter(product => product.category === categoryName);
+            }
+            return sortProducts(filtered, sortValue);
+        }, [products, categoryName, sortValue]);
 
-                return matchesCategory && matchesSearchTerm
-            })
-        }
-    
-        const sortedAndFilteredProducts = useMemo(() => {
-            return sortProducts(filterProducts(products, categoryName, search_term ? search_term : ''), sortValue);
-        }, [products, categoryName, sortValue, search_term]) 
 
-      useEffect(() => {
-        window.scrollTo(0, 0);
-      }, []);
 
-      const handleChangePage = (event, value) => {
-        setCurrentPage(value);
-        window.scrollTo(0, 0);
-      };
-    
-      const indexOfLastProduct = currentPage * productsPerPage;
-      const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-      const currentProducts = sortedAndFilteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
- 
+        const handleChangePage = (event, value) => {
+          setCurrentPage(value);
+          window.scrollTo(0, 0);
+        };
  
     return (
     <>
@@ -124,30 +117,12 @@ const Products = () => {
                             <Link to="/" className='hover:underline ' color="inherit">
                                 Home
                             </Link>
-                            <p className='text-primary '>All Products</p>
+                            <p className='text-primary '>{categoryName}</p>
                         </Breadcrumbs>
                     </div>
+                    {/* <h2 className='self-center font-extrabold text-darkGray text-[30px]'>{categoryName}</h2> */}
                     <div className='flex flex-col w-full max-w-[1200px] gap-[1rem]'>
                         <div className='w-full flex justify-end items-center gap-[2rem]'>
-                            <FormControl size='small' sx={{ minWidth: 150 }}>
-                                <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Category</InputLabel>
-                                <Select 
-                                    value={categoryName} 
-                                    onChange={handleCategoryNameChange}
-                                    multiple
-                                    input={<OutlinedInput label="Tag" />}
-                                    renderValue={(selected) => selected.join(', ')}
-                                    sx={{ borderRadius: '2px', textOverflow: 'ellipsis', maxWidth: 150 }}
-                                    MenuProps={MenuProps}
-                                    >
-                                    {categories.map((category, key) => (
-                                        <MenuItem key={key} value={category}>
-                                            <Checkbox checked={categoryName.indexOf(category) > -1}  />
-                                            <ListItemText primary={category} />
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
                             <FormControl size='small' sx={{ minWidth: 120 }}>
                                 <InputLabel sx={{ fontFamily: 'Montserrat, sans-serif' }}>Sort By</InputLabel>
                                 <Select
@@ -165,7 +140,7 @@ const Products = () => {
                         </div>
                         <div className="flex-center w-full gap-[4rem]">
                             <div className="grid grid-cols-4 gap-[2rem]">
-                            {currentProducts.map((product, index) => (
+                            {filteredProducts.map((product, index) => (
                                 <div 
                                 key={index}
                                 onMouseOver={() => handleProductCardHover(index)} 
@@ -202,7 +177,7 @@ const Products = () => {
                         </div>
                         <div className='flex-center w-full mt-[2rem]'>
                             <Pagination
-                                count={Math.ceil(sortedAndFilteredProducts.length / productsPerPage)}
+                                count={Math.ceil(filteredProducts.length / productsPerPage)}
                                 page={currentPage}
                                 onChange={handleChangePage}
                                 color="primary"
@@ -216,4 +191,4 @@ const Products = () => {
   )
 }
 
-export default Products
+export default CategorizedProducts
