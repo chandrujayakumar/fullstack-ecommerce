@@ -31,6 +31,7 @@ import { clearAdminError, clearAdminMessage } from './features/admin/adminSlice'
 import { clearSellerError, clearSellerMessage } from './features/seller/sellerSlice'
 import { clearCartError, clearCartMessage } from './features/cart/cartSlice'
 import ProductDetails from './components/user/ProductDetails/ProductDetails'
+import CategorizedProducts from './components/user/CategorizedProducts/CategorizedProducts'
 
 function App() {
 
@@ -107,6 +108,8 @@ function App() {
           <Route exact path='/' element={<Home/>} />
           <Route exact path='/account' element={isAuthenticated ? <Account /> : <NotFound />} />
           <Route exact path='/products' element={<Products />} />
+          <Route exact path='/products/:search_term' element={<Products />} />
+          <Route exact path='/:category' element={<CategorizedProducts />} />
           <Route exact path='/product/:product_id' element={<ProductDetails />} />
           <Route exact path='/orders' element={isAuthenticated ? <Orders /> : <NotFound />} />
           <Route exact path='/order/items/:order_id' element={isAuthenticated ? <OrderItems /> : <NotFound />} />

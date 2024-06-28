@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBox, faAddressBook, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { CiUser } from "react-icons/ci";
@@ -20,6 +20,7 @@ import { clearCartState } from '../../features/cart/cartSlice';
 const header = () => {
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const { loading, message, error, isAuthenticated, user } = useSelector((state) => state.user)
   const { adminLoading, adminMessage, adminError, isAdminAuthenticated, admin } = useSelector((state) => state.admin)
@@ -30,6 +31,7 @@ const header = () => {
   const [showAdminDropDown, setShowAdminDropDown] = useState(false)
   const [showSellerDropDown, setShowSellerDropDown] = useState(false)
   const [popLogin, setPopLogin] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   
   const handleMouseHover = (isHovering) => {
@@ -49,6 +51,11 @@ const header = () => {
     setPopLogin(true)
   }
 
+  const handleSearch = (event) => {
+    event.preventDefault();
+
+    navigate(`/products/${searchTerm}`)
+  }
 
   const logout = () => {
     setShowDropDown(false)
@@ -79,10 +86,10 @@ const header = () => {
           </div>
           <div className='flex items-center text-mediumGray gap-[3rem] font-medium text-[14px]'>
             <div className='min-w-[350px] w-full rounded-[2px]'>
-              <div className={`${popLogin ? 'z-[-1]' : 'z-0'} bg-transparent relative flex-center w-full rounded-[2px]`}>
-                <input className='w-full pl-[3rem] pr-[1rem] py-[0.5rem] text-[14px] bg-[#f5f6f6] border-transparent border-[1px] rounded-[2px] focus:outline-none focus:border-mediumGray focus:border-[1px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
+              <form onSubmit={handleSearch} className={`${popLogin ? 'z-[-1]' : 'z-0'} bg-transparent relative flex-center w-full rounded-[2px]`}>
+                <input onChange={(e) => setSearchTerm(e.target.value)} className='w-full pl-[3rem] pr-[1rem] py-[0.5rem] text-[14px] bg-[#f5f6f6] border-transparent border-[1px] rounded-[2px] focus:outline-none focus:border-mediumGray focus:border-[1px] focus:bg-white transition-colors duration-150' type="text" placeholder='Make a wish'/>
                 <FontAwesomeIcon className='absolute left-[1rem] text-[#777]' icon={faMagnifyingGlass} />
-              </div>
+              </form>
             </div>
             {isAdminAuthenticated && (
               <div className={`relative ${popLogin ? 'z-[-1]' : 'z-0'} flex-center h-full`} onMouseEnter={() => handleAdminMouseHover(true)} onMouseLeave={() => handleAdminMouseHover(false)}>

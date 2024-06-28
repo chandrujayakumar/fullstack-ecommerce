@@ -1,9 +1,10 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { Breadcrumbs, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Loader } from '../../../layouts'
 import { getOrderItems } from '../../../features/user/userThunks'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const OrderItems = () => {
 
@@ -61,13 +62,23 @@ const OrderItems = () => {
             <div className='min-h-[90vh] w-full px-[5rem] py-[3rem] '>
                 <div className='flex flex-col gap-[2rem]'>
                     <div className='w-full flex-center'>
-                        <h1 className='font-extrabold text-[30px] text-mediumGray'>Order Details</h1>
+                        <div className='flex justify-start items-start max-w-[1380px] w-full'>
+                            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+                                <Link to="/" className='hover:underline ' color="inherit">
+                                    Home
+                                </Link>
+                                <Link to="/orders" className='hover:underline ' color="inherit">
+                                    Orders
+                                </Link>
+                                <p className='text-primary '>{order_id}</p>
+                            </Breadcrumbs>
+                        </div>
                     </div>
                     <div className='flex gap-[1rem]'>
                         <div className='flex-[2] flex flex-col gap-[1rem]'>
-                            <div className='bg-white shadow-md rounded-[4px] p-[1.5rem] flex flex-col gap-[0.5rem] border-[1px] border-lightGray3'>
-                                <h2 className='font-bold text-[20px] border-b-[1px] border-b-lightGray3 pb-[0.7rem] mb-[0.3rem] text-darkGray'>Delivery Address</h2>
-                                <div className='flex flex-col'>
+                            <div className='bg-white shadow-md rounded-[4px] pb-[1.5rem] flex flex-col gap-[0.5rem] border-[1px] border-lightGray3'>
+                                <h2 className='font-bold text-[16px] bg-primary rounded-[4px_4px_0_0] text-white px-[1.5rem] py-[1rem] mb-[0.3rem]'>Delivery Address</h2>
+                                <div className='flex flex-col px-[1.5rem]'>
                                     <h3 className='font-bold text-[17px] mb-[0.2rem]'>{selectedDeliveryAddress.fullname}</h3>
                                     <p className='text-[15px]'>{selectedDeliveryAddress.address}, {selectedDeliveryAddress.landmark}</p>
                                     <p className='text-[15px]'>{selectedDeliveryAddress.city}, {selectedDeliveryAddress.state}, India, {selectedDeliveryAddress.pincode}</p>
